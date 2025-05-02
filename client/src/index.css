@@ -102,19 +102,19 @@
 
   /* Thrive Gradient Classes */
   .bg-gradient-thrive {
-    @apply bg-gradient-to-b from-thrive-white via-thrive-purple-light/10 to-thrive-purple/20;
+    @apply bg-gradient-to-b from-thrive-white/80 via-thrive-purple-light/5 to-thrive-purple/10;
   }
   
   .button-gradient-thrive {
-    @apply bg-gradient-to-r from-thrive-purple to-thrive-blue text-white;
+    @apply bg-gradient-to-r from-thrive-purple/90 to-thrive-blue/90 text-white backdrop-blur-sm;
   }
   
   .hero-gradient-thrive {
-    @apply bg-gradient-to-b from-thrive-purple-dark via-thrive-purple to-thrive-blue-light;
+    @apply bg-gradient-to-b from-thrive-purple-dark/80 via-thrive-purple/70 to-thrive-blue-light/60;
   }
   
   .card-gradient-thrive {
-    @apply bg-gradient-to-br from-white to-thrive-white;
+    @apply bg-gradient-to-br from-white/90 to-thrive-white/80 backdrop-blur-sm;
   }
   
   /* Section transitions */

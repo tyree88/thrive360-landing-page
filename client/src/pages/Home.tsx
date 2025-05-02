@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import HeroScrollSection from '@/components/ui/hero-scroll-section';
 import ProblemSection from '@/components/ProblemSection';
 import SolutionSection from '@/components/SolutionSection';
 import JourneySection from '@/components/JourneySection';
@@ -13,6 +12,7 @@ import Footer from '@/components/Footer';
 import FloatingCTA from '@/components/FloatingCTA';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import SphereSection from '@/components/SphereSection';
 import { prefersReducedMotion } from '@/lib/utils';
 
 // Register GSAP plugins
@@ -49,18 +49,19 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <Navbar />
-      <HeroSection />
-      <HeroScrollSection />
-      <ProblemSection />
-      <SolutionSection />
-      <JourneySection />
-      <ImpactSection />
-      <CaseStudiesSection />
-      <TestimonialsSection />
-      <CTASection />
-      <Footer />
-      <FloatingCTA />
+      <SphereSection>
+        <Navbar />
+        <HeroSection />
+        <ProblemSection />
+        <SolutionSection />
+        <JourneySection />
+        <ImpactSection />
+        <CaseStudiesSection />
+        <TestimonialsSection />
+        <CTASection />
+        <Footer />
+        <FloatingCTA />
+      </SphereSection>
     </div>
   );
 };
