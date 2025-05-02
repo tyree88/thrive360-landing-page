@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ROUTES } from '@/lib/constants';
+import AnimatedButton from '@/components/ui/animated-button';
 
 const FloatingCTA: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,14 +21,16 @@ const FloatingCTA: React.FC = () => {
   }, []);
   
   return (
-    <div id="floatingCTA" className={`floating-cta fixed bottom-6 right-6 z-50 ${isVisible ? 'visible' : ''}`}>
-      <a 
+    <div id="floatingCTA" className={`floating-cta fixed bottom-6 right-6 z-50 transform transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+      <AnimatedButton 
         href={ROUTES.DEMO} 
-        className="flex items-center space-x-2 px-6 py-3 bg-thrive-purple-500 text-white rounded-full shadow-lg hover:bg-thrive-purple-600 transition-all"
+        variant="gradient"
+        size="md"
+        icon={<i className="fas fa-arrow-right"></i>}
+        className="shadow-lg"
       >
-        <span className="font-medium">Get a Demo</span>
-        <i className="fas fa-arrow-right"></i>
-      </a>
+        Get a Demo
+      </AnimatedButton>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { FeatureIcon } from '@/assets/icons';
 import { PROBLEM_STATS, ROUTES } from '@/lib/constants';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
+import AnimatedButton from '@/components/ui/animated-button';
 
 const ProblemSection: React.FC = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -88,17 +89,15 @@ const ProblemSection: React.FC = () => {
         <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
           Healthcare providers and employers struggle to deliver effective mental health support at scale.
         </p>
-        <a 
+        <AnimatedButton 
           href={ROUTES.SOLUTION} 
-          className="inline-flex items-center px-6 py-3 rounded-full text-lg font-medium transition-colors shadow-md"
-          style={{
-            background: "linear-gradient(to right, #6D3CA7, #3462AE)",
-            color: "white"
-          }}
+          variant="gradient"
+          size="lg"
+          icon={<i className="fas fa-arrow-right"></i>}
+          className="shadow-md"
         >
           See the Solution
-          <i className="fas fa-arrow-right ml-2"></i>
-        </a>
+        </AnimatedButton>
       </div>
     </section>
   );

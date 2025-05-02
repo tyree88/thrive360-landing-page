@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ROUTES } from '@/lib/constants';
 import gsap from 'gsap';
+import AnimatedButton from '@/components/ui/animated-button';
 
 const HeroSection: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -99,12 +100,15 @@ const HeroSection: React.FC = () => {
           ref={ctaRef}
           className="flex justify-center mt-12 mb-16"
         >
-          <a 
+          <AnimatedButton 
             href={ROUTES.DEMO} 
-            className="px-8 py-3 bg-white text-gray-900 rounded-full text-lg font-medium hover:bg-gray-100 transition-colors shadow-lg"
+            variant="primary"
+            size="lg"
+            icon={<i className="fas fa-arrow-right"></i>}
+            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg"
           >
             Schedule a Demo
-          </a>
+          </AnimatedButton>
         </div>
         
         <div 
