@@ -85,43 +85,9 @@ const SolutionSection: React.FC = () => {
       showTransitionBottom={true}
     >
       <div ref={sectionRef} className="w-full">
-        {/* Grid entry header section */}
-        <div ref={headerRef} className="w-full pt-12 pb-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <GridScrollTransition columnsSmall={2} columnsLarge={4} gridClassName="gap-4 md:gap-6">
-              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <div className="rounded-full w-12 h-12 bg-purple-100 flex items-center justify-center mb-4">
-                  <i className="fas fa-brain text-purple-600"></i>
-                </div>
-                <h3 className="font-bold text-lg mb-2">Neuro-based</h3>
-                <p className="text-sm text-gray-600">Using brain science to create lasting change</p>
-              </div>
-              
-              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <div className="rounded-full w-12 h-12 bg-blue-100 flex items-center justify-center mb-4">
-                  <i className="fas fa-robot text-blue-600"></i>
-                </div>
-                <h3 className="font-bold text-lg mb-2">AI-powered</h3>
-                <p className="text-sm text-gray-600">Smart personalization for every user</p>
-              </div>
-              
-              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <div className="rounded-full w-12 h-12 bg-green-100 flex items-center justify-center mb-4">
-                  <i className="fas fa-chart-line text-green-600"></i>
-                </div>
-                <h3 className="font-bold text-lg mb-2">Results-driven</h3>
-                <p className="text-sm text-gray-600">Measurable outcomes and real-time improvement</p>
-              </div>
-              
-              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <div className="rounded-full w-12 h-12 bg-amber-100 flex items-center justify-center mb-4">
-                  <i className="fas fa-users text-amber-600"></i>
-                </div>
-                <h3 className="font-bold text-lg mb-2">User-centric</h3>
-                <p className="text-sm text-gray-600">Designed for high engagement and satisfaction</p>
-              </div>
-            </GridScrollTransition>
-          </div>
+        {/* Animated Header Cards */}
+        <div className="w-full">
+          <ThriveCardsAnimation />
         </div>
         
         <div className="max-w-7xl mx-auto px-6 py-20 w-full">
