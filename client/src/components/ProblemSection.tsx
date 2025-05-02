@@ -10,7 +10,28 @@ import SectionScrollLink from '@/components/ui/section-scroll-link';
 import gsap from 'gsap';
 
 const ProblemSection: React.FC = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const transitionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!transitionRef.current) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: transitionRef.current,
+        start: 'top 80%',
+        end: 'center 50%',
+        scrub: 1
+      }
+    });
+
+    tl.fromTo(
+      '.transition-item',
+      { y: 0, opacity: 0 },
+      { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
+    );
+  }, []);
 
   return (
     <BackgroundWrapper
@@ -94,20 +115,69 @@ const ProblemSection: React.FC = () => {
       
       <div 
         ref={ctaRef}
-        className="text-center max-w-4xl mx-auto px-6 pb-20"
+        className="text-center max-w-4xl mx-auto px-6 pb-10"
       >
         <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
           Healthcare providers and employers struggle to deliver effective mental health support at scale.
         </p>
-        <AnimatedButton 
-          href={ROUTES.SOLUTION} 
-          variant="gradient"
-          size="lg"
-          icon={<i className="fas fa-arrow-right"></i>}
-          className="shadow-md"
-        >
-          See the Solution
-        </AnimatedButton>
+      </div>
+      
+      {/* Transition to Solution Section */}
+      <div 
+        ref={transitionRef}
+        className="w-full py-16"
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="inline-block px-3 py-1 text-sm font-medium bg-thrive-purple-100 text-thrive-purple-700 rounded-full mb-4">
+              The Future of Mental Health
+            </span>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+              Discover how Thrive360 is changing the game
+            </h3>
+          </div>
+          
+          <GridScrollTransition columnsSmall={2} columnsLarge={4} gridClassName="gap-6 md:gap-8 mb-12">
+            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #8776D5, #6D3CA7)' }}>
+              <div className="p-4 h-full flex flex-col justify-end text-white">
+                <h4 className="font-bold text-lg mb-1">AI-Driven</h4>
+                <p className="text-sm opacity-90">Personalized mental health at scale</p>
+              </div>
+            </div>
+            
+            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #3462AE, #1E3A8A)' }}>
+              <div className="p-4 h-full flex flex-col justify-end text-white">
+                <h4 className="font-bold text-lg mb-1">Neuroplastic</h4>
+                <p className="text-sm opacity-90">Evidence-based techniques</p>
+              </div>
+            </div>
+            
+            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6DECF9, #3462AE)' }}>
+              <div className="p-4 h-full flex flex-col justify-end text-white">
+                <h4 className="font-bold text-lg mb-1">Engaging</h4>
+                <p className="text-sm opacity-90">80% completion rates</p>
+              </div>
+            </div>
+            
+            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #F5F2FF, #988AD5)' }}>
+              <div className="p-4 h-full flex flex-col justify-end text-gray-900">
+                <h4 className="font-bold text-lg mb-1">Measurable</h4>
+                <p className="text-sm opacity-90">Real impact tracking</p>
+              </div>
+            </div>
+          </GridScrollTransition>
+          
+          <div className="text-center mt-8">
+            <SectionScrollLink
+              sourceId="problem"
+              targetId="solution"
+              direction="down"
+              className="inline-block"
+            >
+              See the solution
+            </SectionScrollLink>
+          </div>
+        </div>
       </div>
     </BackgroundWrapper>
   );

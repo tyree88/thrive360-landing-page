@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import GradientCard from '@/components/ui/gradient-card';
 import AnimatedButton from '@/components/ui/animated-button';
+import GridScrollTransition from '@/components/ui/grid-scroll-transition';
 
 const SolutionSection: React.FC = () => {
   // Using useSequence for the feature list items
@@ -26,6 +27,7 @@ const SolutionSection: React.FC = () => {
   const subheadingRef = useRef<HTMLParagraphElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -37,6 +39,16 @@ const SolutionSection: React.FC = () => {
         once: true
       }
     });
+    
+    // Add animation for header section if it exists
+    if (headerRef.current) {
+      tl.fromTo(
+        headerRef.current.querySelectorAll('.grid-entry-item'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, stagger: 0.1, duration: 0.6 },
+        "-=0.2"
+      );
+    }
 
     tl.fromTo(
       headingRef.current,
@@ -72,6 +84,45 @@ const SolutionSection: React.FC = () => {
       showTransitionBottom={true}
     >
       <div ref={sectionRef} className="w-full">
+        {/* Grid entry header section */}
+        <div ref={headerRef} className="w-full pt-12 pb-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <GridScrollTransition columnsSmall={2} columnsLarge={4} gridClassName="gap-4 md:gap-6">
+              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="rounded-full w-12 h-12 bg-purple-100 flex items-center justify-center mb-4">
+                  <i className="fas fa-brain text-purple-600"></i>
+                </div>
+                <h3 className="font-bold text-lg mb-2">Neuro-based</h3>
+                <p className="text-sm text-gray-600">Using brain science to create lasting change</p>
+              </div>
+              
+              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="rounded-full w-12 h-12 bg-blue-100 flex items-center justify-center mb-4">
+                  <i className="fas fa-robot text-blue-600"></i>
+                </div>
+                <h3 className="font-bold text-lg mb-2">AI-powered</h3>
+                <p className="text-sm text-gray-600">Smart personalization for every user</p>
+              </div>
+              
+              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="rounded-full w-12 h-12 bg-green-100 flex items-center justify-center mb-4">
+                  <i className="fas fa-chart-line text-green-600"></i>
+                </div>
+                <h3 className="font-bold text-lg mb-2">Results-driven</h3>
+                <p className="text-sm text-gray-600">Measurable outcomes and real-time improvement</p>
+              </div>
+              
+              <div className="grid-entry-item p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="rounded-full w-12 h-12 bg-amber-100 flex items-center justify-center mb-4">
+                  <i className="fas fa-users text-amber-600"></i>
+                </div>
+                <h3 className="font-bold text-lg mb-2">User-centric</h3>
+                <p className="text-sm text-gray-600">Designed for high engagement and satisfaction</p>
+              </div>
+            </GridScrollTransition>
+          </div>
+        </div>
+        
         <div className="max-w-7xl mx-auto px-6 py-20 w-full">
           <div className="text-center mb-16">
             <span className="inline-block px-3 py-1 text-sm font-medium bg-thrive-purple-100 text-thrive-purple-700 rounded-full mb-4">
