@@ -118,9 +118,8 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
-      
       {/* Add scroll section below the hero */}
-      <HeroScrollSection className="mt-20" />
+      <HeroScrollSection />
     </BackgroundWrapper>
   );
 };

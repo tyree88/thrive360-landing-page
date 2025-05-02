@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { ScrollAndSwapText } from '@/components/ui/scroll-and-swap-text';
-// @ts-ignore - Import without types to avoid type issues
-import Lenis from '@studio-freight/lenis';
 
 interface HeroScrollSectionProps {
   className?: string;
@@ -54,11 +52,12 @@ const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({ className }) => {
 
   return (
     <div 
-      className={`w-full h-screen bg-gradient-to-b from-thrive-purple-darker to-thrive-purple-dark overflow-hidden ${className || ''}`}
+      className={`w-full min-h-screen bg-gradient-to-b from-thrive-purple-darker to-thrive-purple-dark overflow-hidden ${className || ''}`}
     >
       <div 
         ref={containerRef}
-        className="w-full h-full overflow-auto snap-y snap-mandatory relative"
+        className="w-full h-screen overflow-auto snap-y snap-mandatory relative hide-scrollbar"
+        style={{ scrollbarWidth: 'none' }}
       >
         <div 
           ref={sectionRef}

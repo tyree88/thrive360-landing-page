@@ -20,7 +20,7 @@ const ScrollAndSwapText = ({
   const { scrollYProgress } = useScroll({
     container: containerRef,
     target: ref,
-    offset: offset as any, // framer motion doesnt export the type, so we have to cast it, sorry :/
+    offset: offset as any, // framer motion doesn't export the type, so we cast it
     layoutEffect: false,
   })
 
@@ -34,12 +34,20 @@ const ScrollAndSwapText = ({
       ref={ref}
       {...props}
     >
+      {/* Invisible text to maintain proper spacing */}
       <span className="relative text-transparent" aria-hidden="true">{label}</span>
-      <motion.span className="absolute " style={{ top: top }} >
+      
+      {/* Text that slides up and out */}
+      <motion.span 
+        className="absolute text-white" 
+        style={{ top: top }}
+      >
         {label}
       </motion.span>
+      
+      {/* Text that slides up and in */}
       <motion.span
-        className="absolute "
+        className="absolute text-white"
         style={{ top: bottom }}
         aria-hidden="true"
       >

@@ -86,6 +86,15 @@
     @apply min-h-screen w-full relative overflow-hidden py-20;
   }
   
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  
   /* Grid Item Styling */
   .grid-item {
     @apply rounded-lg overflow-hidden transition-all duration-500;
