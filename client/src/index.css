@@ -83,6 +83,11 @@
   .section {
     @apply min-h-screen w-full relative overflow-hidden py-20;
   }
+  
+  /* Grid Item Styling */
+  .grid-item {
+    @apply rounded-lg overflow-hidden transition-all duration-500;
+  }
 
   /* Thrive Gradient Classes */
   .bg-gradient-thrive {

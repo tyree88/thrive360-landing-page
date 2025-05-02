@@ -1,10 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FeatureIcon } from '@/assets/icons';
 import { PROBLEM_STATS, ROUTES } from '@/lib/constants';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import AnimatedButton from '@/components/ui/animated-button';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import GradientCard from '@/components/ui/gradient-card';
+import GridScrollTransition from '@/components/ui/grid-scroll-transition';
+import SectionScrollLink from '@/components/ui/section-scroll-link';
+import gsap from 'gsap';
 
 const ProblemSection: React.FC = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
