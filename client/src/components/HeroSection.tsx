@@ -4,7 +4,6 @@ import gsap from 'gsap';
 import AnimatedButton from '@/components/ui/animated-button';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { Spotlight, GridBackground } from '@/components/ui/spotlight';
-import HeroScrollSection from '@/components/ui/hero-scroll-section';
 
 const HeroSection: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -118,8 +117,6 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Add scroll section below the hero */}
-      <HeroScrollSection />
     </BackgroundWrapper>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
+import HeroScrollSection from '@/components/ui/hero-scroll-section';
 import ProblemSection from '@/components/ProblemSection';
 import SolutionSection from '@/components/SolutionSection';
 import JourneySection from '@/components/JourneySection';
@@ -50,6 +51,7 @@ const Home: React.FC = () => {
     <div>
       <Navbar />
       <HeroSection />
+      <HeroScrollSection />
       <ProblemSection />
       <SolutionSection />
       <JourneySection />
