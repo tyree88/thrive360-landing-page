@@ -51,7 +51,6 @@ const Home: React.FC = () => {
     <div>
       <Navbar />
       <HeroSection />
-      <HeroScrollSection />
       <ProblemSection />
       <SolutionSection />
       <JourneySection />
