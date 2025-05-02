@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants';
-import { CompanyLogo } from '@/assets/icons';
 import useMobile from '@/hooks/use-mobile';
 
 interface NavItem {
@@ -11,12 +10,20 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Problem', href: ROUTES.PROBLEM },
-  { label: 'Solution', href: ROUTES.SOLUTION },
-  { label: 'Impact', href: ROUTES.IMPACT },
-  { label: 'Testimonials', href: ROUTES.TESTIMONIALS },
-  { label: 'Contact', href: ROUTES.CONTACT },
+  { label: 'Solutions', href: ROUTES.SOLUTION },
+  { label: 'Company', href: ROUTES.ABOUT },
+  { label: 'Resources', href: ROUTES.RESOURCES },
 ];
+
+// Simple logo component matching the style in the screenshot
+const Logo = () => (
+  <div className="flex items-center font-bold text-white">
+    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-blue-500 mr-2 flex items-center justify-center">
+      <div className="w-3 h-3 bg-white rounded-full"></div>
+    </div>
+    <span>Healthy<br />Together</span>
+  </div>
+);
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,7 +33,7 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
-      setIsScrolled(scrollTop > 10);
+      setIsScrolled(scrollTop > 50);
     };
     
     window.addEventListener('scroll', handleScroll);
@@ -38,8 +45,8 @@ export function Navbar() {
   };
 
   const navbarClass = cn(
-    'fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm px-4 transition-all duration-300',
-    isScrolled ? 'py-2' : 'py-4'
+    'fixed top-0 w-full z-50 px-4 py-4 transition-all duration-300',
+    isScrolled ? 'bg-[#101219]/90 backdrop-blur-sm' : 'bg-transparent'
   );
 
   const closeMobileMenu = () => {
@@ -49,8 +56,8 @@ export function Navbar() {
   return (
     <nav className={navbarClass}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link href={ROUTES.HOME} className="flex items-center space-x-2">
-          <CompanyLogo />
+        <Link href={ROUTES.HOME} className="flex items-center">
+          <Logo />
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">
@@ -58,30 +65,24 @@ export function Navbar() {
             <a 
               key={item.href}
               href={item.href} 
-              className="text-gray-700 hover:text-thrive-purple-500 transition-colors"
+              className="text-white hover:text-white/80 transition-colors font-medium"
             >
               {item.label}
             </a>
           ))}
         </div>
         
-        <div className="flex items-center space-x-4">
-          <a 
-            href={ROUTES.DEMO} 
-            className="hidden md:block px-5 py-2 bg-white text-thrive-purple-500 border border-thrive-purple-500 rounded-full text-sm font-medium hover:bg-thrive-purple-50 transition-colors"
-          >
-            Get Demo
-          </a>
+        <div className="flex items-center">
           <a 
             href={ROUTES.CONTACT} 
-            className="px-5 py-2 bg-thrive-purple-500 text-white rounded-full text-sm font-medium hover:bg-thrive-purple-600 transition-colors shadow-md"
+            className="px-5 py-3 bg-[#5D5FEF] bg-opacity-90 text-white rounded-full text-sm font-medium hover:bg-opacity-100 transition-colors shadow-md"
           >
-            Contact Us
+            Talk to Our Team
           </a>
           {isMobile && (
             <button 
               onClick={toggleMobileMenu} 
-              className="md:hidden text-gray-700 hover:text-thrive-purple-500 transition-colors"
+              className="md:hidden ml-4 text-white transition-colors"
               aria-label="Toggle menu"
             >
               <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`}></i>
@@ -94,7 +95,7 @@ export function Navbar() {
       {isMobile && (
         <div 
           className={cn(
-            "md:hidden w-full bg-white mt-4 rounded-lg shadow-lg p-4 absolute left-0 right-0 transition-all duration-300",
+            "md:hidden w-full bg-[#101219] mt-4 rounded-lg shadow-lg p-4 absolute left-0 right-0 transition-all duration-300",
             mobileMenuOpen ? "block" : "hidden"
           )}
         >
@@ -103,18 +104,18 @@ export function Navbar() {
               <a 
                 key={item.href}
                 href={item.href} 
-                className="text-gray-700 hover:text-thrive-purple-500 transition-colors py-2 px-3 rounded-md hover:bg-gray-50"
+                className="text-white hover:text-white/80 transition-colors py-2 px-3 rounded-md hover:bg-white/10"
                 onClick={closeMobileMenu}
               >
                 {item.label}
               </a>
             ))}
             <a 
-              href={ROUTES.DEMO} 
-              className="text-center py-2 px-3 bg-white text-thrive-purple-500 border border-thrive-purple-500 rounded-full font-medium hover:bg-thrive-purple-50 transition-colors"
+              href={ROUTES.CONTACT} 
+              className="text-center py-2 px-3 bg-[#5D5FEF] text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
               onClick={closeMobileMenu}
             >
-              Get Demo
+              Talk to Our Team
             </a>
           </div>
         </div>

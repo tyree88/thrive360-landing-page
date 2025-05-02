@@ -7,6 +7,8 @@ export const ROUTES = {
   TESTIMONIALS: '#testimonials',
   CONTACT: '#contact',
   DEMO: '#demo',
+  ABOUT: '#about',
+  RESOURCES: '#resources',
 };
 
 export const COMPANY = {
