@@ -5,6 +5,7 @@ import ProblemSection from '@/components/ProblemSection';
 import SolutionSection from '@/components/SolutionSection';
 import JourneySection from '@/components/JourneySection';
 import ImpactSection from '@/components/ImpactSection';
+import CaseStudiesSection from '@/components/CaseStudiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
@@ -53,6 +54,7 @@ const Home: React.FC = () => {
       <SolutionSection />
       <JourneySection />
       <ImpactSection />
+      <CaseStudiesSection />
       <TestimonialsSection />
       <CTASection />
       <Footer />

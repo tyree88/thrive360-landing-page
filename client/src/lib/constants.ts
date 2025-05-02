@@ -118,6 +118,63 @@ export const IMPACT_STATS = [
   },
 ];
 
+export const CASE_STUDIES = [
+  {
+    id: 1,
+    title: 'Metro Health Network',
+    subtitle: 'Healthcare Provider',
+    description: 'A healthcare system with 3,000+ employees implemented Thrive360 to address burnout and improve retention.',
+    results: [
+      { metric: '42%', label: 'Reduction in reported burnout' },
+      { metric: '37%', label: 'Decrease in sick days taken' },
+      { metric: '28%', label: 'Improvement in employee retention' }
+    ],
+    quote: {
+      text: "Thrive360 has transformed how we deliver mental health support to our staff. The personalized approach and data insights have been invaluable.",
+      author: "Dr. Sarah Chen",
+      role: "Chief Wellness Officer"
+    },
+    bgColor: 'from-purple-500 to-blue-600',
+    iconName: 'hospital'
+  },
+  {
+    id: 2,
+    title: 'Nexus Technologies',
+    subtitle: 'Tech Company',
+    description: 'A fast-growing tech firm used Thrive360 to support its distributed team across 12 countries during rapid scaling.',
+    results: [
+      { metric: '68%', label: 'Program engagement rate' },
+      { metric: '45%', label: 'Increase in team cohesion scores' },
+      { metric: '33%', label: 'Improvement in productivity metrics' }
+    ],
+    quote: {
+      text: "In our high-pressure environment, Thrive360 has been the secret weapon for keeping our team connected and resilient.",
+      author: "Marcus Wong",
+      role: "VP of People Operations"
+    },
+    bgColor: 'from-blue-500 to-cyan-400',
+    iconName: 'laptop-code'
+  },
+  {
+    id: 3,
+    title: 'Pinnacle Financial',
+    subtitle: 'Financial Services',
+    description: 'A leading financial services firm implemented Thrive360 to combat stress and improve decision-making during market volatility.',
+    results: [
+      { metric: '53%', label: 'Reduction in stress-related incidents' },
+      { metric: '41%', label: 'Improvement in decision confidence' },
+      { metric: '26%', label: 'Decrease in employee turnover' }
+    ],
+    quote: {
+      text: "The improvement in our team's mental resilience has directly impacted our bottom line. Thrive360 delivers measurable ROI.",
+      author: "Alisha Patel",
+      role: "Chief Strategy Officer"
+    },
+    bgColor: 'from-emerald-500 to-green-500',
+    iconName: 'chart-line'
+  }
+];
+
 export const TESTIMONIALS = [
   {
     quote: 'Thrive360 has been transformative for our company culture. Our team is more engaged, productive, and emotionally resilient. The ROI has been tremendous.',
