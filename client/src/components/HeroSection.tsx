@@ -7,9 +7,39 @@ import AnimatedButton from '@/components/ui/animated-button';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { Spotlight, GridBackground } from '@/components/ui/spotlight';
 import { ScrollAndSwapText } from '@/components/ui/scroll-and-swap-text';
+import ParallaxShapes from '@/components/ui/parallax-shapes';
+import SectionPinningAnimation from '@/components/ui/section-pinning-animation';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+// Define shapes for parallax background
+const HERO_SHAPES = [
+  {
+    shape: 'blob',
+    size: 15, 
+    position: { top: '10%', left: '5%' },
+    color: '#6D3CA7',
+    depth: 0.3,
+    opacity: 0.05
+  },
+  {
+    shape: 'circle',
+    size: 8,
+    position: { top: '30%', right: '10%' },
+    color: '#3462AE',
+    depth: 0.2,
+    opacity: 0.05
+  },
+  {
+    shape: 'square',
+    size: 12,
+    position: { bottom: '15%', left: '15%' },
+    color: '#988AD5',
+    depth: 0.1,
+    opacity: 0.04
+  },
+] as const;
 
 const HeroSection: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -153,6 +183,9 @@ const HeroSection: React.FC = () => {
         gradientSecond="radial-gradient(50% 50% at 50% 50%, hsla(219, 53%, 70%, .12) 0, hsla(219, 53%, 44%, .05) 80%, transparent 100%)"
         gradientThird="radial-gradient(50% 50% at 50% 50%, hsla(186, 95%, 80%, .08) 0, hsla(186, 95%, 70%, .04) 80%, transparent 100%)"
       />
+      
+      {/* Add parallax shapes for depth */}
+      <ParallaxShapes shapes={HERO_SHAPES} />
       
       <div className="max-w-7xl mx-auto px-6 py-32 relative z-10 text-center">
         <h1 
