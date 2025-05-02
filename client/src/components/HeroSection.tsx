@@ -2,14 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { SpotlightBackground, WavyUnderline } from '@/assets/icons';
 import { ROUTES } from '@/lib/constants';
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
+// Import animation hooks, but we'll use them in a simplified way for now
 import { useScrollTriggerAnimation, useParallax } from '@/hooks/use-animation';
 
-// Register ScrollTrigger
-gsap.registerPlugin(ScrollTrigger);
-
 const HeroSection: React.FC = () => {
-  const parallaxRef = useParallax('.parallax-bg', { speed: 30 });
+  // Disabled parallax for now
+  const parallaxRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -45,27 +43,25 @@ const HeroSection: React.FC = () => {
     );
   }, []);
 
-  useScrollTriggerAnimation(() => {
-    // Handle floating CTA visibility on scroll
-    const floatingCTA = document.getElementById('floatingCTA');
-    
-    ScrollTrigger.create({
-      start: 'top+=500',
-      onEnter: () => {
-        if (floatingCTA) {
-          floatingCTA.classList.add('visible');
-        }
-      },
-      onLeaveBack: () => {
-        if (floatingCTA) {
-          floatingCTA.classList.remove('visible');
-        }
+  // Simplified scroll handler for floating CTA
+  useEffect(() => {
+    const handleScroll = () => {
+      const floatingCTA = document.getElementById('floatingCTA');
+      if (!floatingCTA) return;
+      
+      if (window.scrollY > 500) {
+        floatingCTA.classList.add('visible');
+      } else {
+        floatingCTA.classList.remove('visible');
       }
-    });
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <section id="hero" className="section flex items-center justify-center relative overflow-hidden">
+    <section id="hero" className="section flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-thrive-purple-600 via-thrive-purple-500 to-thrive-purple-700">
       <SpotlightBackground />
       
       <div className="max-w-7xl mx-auto px-6 py-20 relative z-10 text-center">

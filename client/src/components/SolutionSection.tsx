@@ -11,19 +11,10 @@ const SolutionSection: React.FC = () => {
   useEffect(() => {
     if (featureItemsRef.current) {
       const items = featureItemsRef.current.querySelectorAll('.feature-item');
-      gsap.fromTo(items, 
-        { opacity: 0, y: 20 }, 
-        { 
-          opacity: 1, 
-          y: 0, 
-          stagger: 0.15, 
-          duration: 0.6,
-          scrollTrigger: {
-            trigger: featureItemsRef.current,
-            start: 'top 80%'
-          }
-        }
-      );
+      // Initialize with opacity 1 until GSAP is fully configured
+      items.forEach((item) => {
+        (item as HTMLElement).style.opacity = '1';
+      });
     }
   }, []);
   
