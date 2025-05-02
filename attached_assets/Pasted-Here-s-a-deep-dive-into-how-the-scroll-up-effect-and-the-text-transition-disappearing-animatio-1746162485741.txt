@@ -1,0 +1,87 @@
+Here’s a deep dive into how the **scroll-up effect** and the **text transition/disappearing animations** are orchestrated with GSAP ScrollTrigger in your React/Tailwind setup:
+
+---
+
+## 1. Scroll-Up Effect
+
+- **ScrollTrigger with `scrub: true`**  
+  By giving the ScrollTrigger a `scrub` value (e.g. `scrub: 0.5`), you tie the animation’s progress directly to the scrollbar position—both forward *and* backward. As you drag the scroll back up, the timeline smoothly reverses, so every move down you made is undone in real time.  
+
+- **Start/End Markers Define the Range**  
+  Each section’s ScrollTrigger is configured with `start: "top bottom"` and `end: "bottom top"` (or similar viewport-relative markers). This creates a range over which the animation plays forward while scrolling down—and then reverses over that same range when scrolling up.  
+
+- **Linear Mapping & Easing**  
+  With `ease: "none"`, the scroll-to-animation mapping is perfectly linear. No acceleration or deceleration occurs—your content moves exactly in step with your finger or mousewheel.  
+
+- **Pinning & Release**  
+  For pinned sections (like your case study frame), the ScrollTrigger uses `pin: true`. When you scroll past the `start` point, the section locks in place. Scrolling up past the `end` point “unpins” it, again in lockstep thanks to `scrub`.  
+
+- **Cleanup on Unmount**  
+  Each `<ScrollGridMotion>` or `<ContainerScrollAnimation>` component calls `ScrollTrigger.kill()` on unmount to remove listeners and avoid memory leaks—so your scroll-up logic stays performant even if you navigate away and back.
+
+---
+
+## 2. Text Transition & Disappearing Animations
+
+### A. Fade-Out + Slide-Up on Scroll Down
+- **Timeline Setup**  
+  ```js
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: textContainer,
+      start: "top 60%",
+      end: "top 40%",
+      scrub: true
+    }
+  });
+  ```
+- **Tween 1: Fade & Lift**  
+  ```js
+  tl.to(textElement, {
+    opacity: 0,
+    y: -30,
+    duration: 1,
+    ease: "power1.out"
+  });
+  ```
+  As you scroll from 60% down to 40% of the viewport, the text’s opacity ramps from 1→0 while it moves up 30 px, giving that gentle disappearing “lift.”
+
+### B. Staggered Reveal of Next Text
+- **Chained Tween**  
+  Immediately after the fade-out tween, the timeline continues with:
+  ```js
+  tl.from(nextTextElement, {
+    opacity: 0,
+    y: 30,
+    duration: 1,
+    ease: "power1.out"
+  }, "<"); // “<” means start at the same time as the end of the previous tween
+  ```
+  This brings in the new text, fading it up from below exactly as the old text fades out above—creating a seamless hand-off.
+
+### C. Reverse on Scroll Up
+- **Scrub-Driven Rewind**  
+  Because the entire timeline is scrubbed, when you scroll up past the `start` point (60%), GSAP reverses both tweens in lockstep: the new text slides down and fades out, and then the old text slides back in and fades up to full opacity.
+
+### D. Toggle-Actions Alternative (When You Want Snap)
+- **`toggleActions: "play reverse play reverse"`**  
+  If you didn’t need a scrubbed effect but rather a “snap” (play on enter, reverse on leave), you’d set `scrub: false` and:
+  ```js
+  scrollTrigger: {
+    toggleActions: "play reverse play reverse",
+    start: "top 60%",
+    end: "top 40%"
+  }
+  ```
+  This makes the text instantly animate when you cross the threshold, and instantly reverse on crossing back—because GSAP handles the `play` and `reverse` calls for you.
+
+---
+
+### Why It Feels So Smooth
+1. **One Timeline, One ScrollTrigger:** All related tweens live in the same timeline, so GSAP can interpolate between states perfectly on both scroll directions.  
+2. **Matching Durations to Scroll Range:** By aligning the `duration` of each tween with the pixel distance (via viewport-relative `start`/`end`), the animations complete exactly as the user reaches the next section.  
+3. **No Forced Repaints:** All animations use `transform` and `opacity`, so the browser can offload them to the GPU—keeping frames buttery smooth even on heavy pages.
+
+---
+
+With this setup, your headings and body copy feel like they organically “flow” out of view as you move on—and then “flow” back when you return—making the narrative progression itself feel like a physical space the user navigates.

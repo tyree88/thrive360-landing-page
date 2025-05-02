@@ -76,7 +76,7 @@ const HeroSection: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current || !sectionRef.current) return;
     
-    // Style for hiding elements before reveal
+    // Style for hiding elements before reveal and transition effects
     const style = document.createElement('style');
     style.innerHTML = `
       .section-text-reveal {
@@ -104,19 +104,53 @@ const HeroSection: React.FC = () => {
       [data-scroll-index].section-text-reveal.revealed {
         transform: translateY(0) translateX(0) scale(1);
       }
+      
+      /* Disappearing animation for text on scroll */
+      .snap-section {
+        position: relative;
+      }
+      .snap-section.scrolling-up .section-text-reveal.revealed {
+        opacity: 0 !important;
+        transform: translateY(-50px) !important;
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out !important;
+      }
+      .snap-section.scrolling-down .section-text-reveal.revealed {
+        opacity: 0 !important;
+        transform: translateY(-30px) !important;
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out !important;
+      }
     `;
     document.head.appendChild(style);
     
     // Function to handle section transitions
     const handleSectionChange = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !sectionRef.current) return;
       
       const currentScroll = containerRef.current.scrollTop;
       const containerHeight = containerRef.current.clientHeight;
       const currentSection = Math.round(currentScroll / containerHeight);
+      const sections = sectionRef.current.querySelectorAll('.snap-section');
       
       // Only update if section changed
       if (currentSection !== activeSection) {
+        // If we have a previous section, add the transition effect
+        if (activeSection >= 0 && activeSection < sections.length) {
+          const prevSection = sections[activeSection];
+          
+          // Apply the appropriate scrolling direction class
+          if (currentSection > activeSection) {
+            prevSection.classList.add('scrolling-up');
+          } else {
+            prevSection.classList.add('scrolling-down');
+          }
+          
+          // Remove the class after animation completes
+          setTimeout(() => {
+            prevSection.classList.remove('scrolling-up');
+            prevSection.classList.remove('scrolling-down');
+          }, 500);
+        }
+        
         // Hide elements from previous sections
         const allElements = document.querySelectorAll('.section-text-reveal');
         allElements.forEach((el) => {
@@ -195,15 +229,46 @@ const HeroSection: React.FC = () => {
       // Determine direction and target section
       if (scrollAmount > 0 && currentSection < snapPoints - 1) {
         targetSection = currentSection + 1;
+        
+        // Add scrolling-down class to current section for text disappearing animation
+        const currentSectionEl = sections[currentSection];
+        if (currentSectionEl) {
+          // First clear any previous direction classes
+          sections.forEach(s => {
+            s.classList.remove('scrolling-up');
+            s.classList.remove('scrolling-down');
+          });
+          currentSectionEl.classList.add('scrolling-down');
+        }
       } else if (scrollAmount < 0 && currentSection > 0) {
         targetSection = currentSection - 1;
+        
+        // Add scrolling-up class to current section for text disappearing animation
+        const currentSectionEl = sections[currentSection];
+        if (currentSectionEl) {
+          // First clear any previous direction classes
+          sections.forEach(s => {
+            s.classList.remove('scrolling-up');
+            s.classList.remove('scrolling-down');
+          });
+          currentSectionEl.classList.add('scrolling-up');
+        }
       }
       
       // Use GSAP to animate the scroll with easing
       gsap.to(container, {
         scrollTop: targetSection * containerHeight,
         duration: 0.8,
-        ease: 'power2.out'
+        ease: 'power2.out',
+        onComplete: () => {
+          // Clear transition classes after animation completes
+          setTimeout(() => {
+            sections.forEach(s => {
+              s.classList.remove('scrolling-up');
+              s.classList.remove('scrolling-down');
+            });
+          }, 100);
+        }
       });
     };
     
