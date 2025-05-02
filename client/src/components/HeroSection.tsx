@@ -72,6 +72,92 @@ const HeroSection: React.FC = () => {
 
   }, []);
   
+  // Initialize animations for scroll sections
+  useEffect(() => {
+    if (!containerRef.current || !sectionRef.current) return;
+    
+    // Style for hiding elements before reveal
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .section-text-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .section-text-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Additional effects for different section indexes */
+      [data-scroll-index="0"].section-text-reveal {
+        transform: translateY(40px);
+      }
+      [data-scroll-index="1"].section-text-reveal {
+        transform: translateY(30px) scale(0.95);
+      }
+      [data-scroll-index="2"].section-text-reveal {
+        transform: translateY(35px) translateX(-15px);
+      }
+      [data-scroll-index="3"].section-text-reveal {
+        transform: translateY(25px) translateX(15px);
+      }
+      [data-scroll-index].section-text-reveal.revealed {
+        transform: translateY(0) translateX(0) scale(1);
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Function to handle section transitions
+    const handleSectionChange = () => {
+      if (!containerRef.current) return;
+      
+      const currentScroll = containerRef.current.scrollTop;
+      const containerHeight = containerRef.current.clientHeight;
+      const currentSection = Math.round(currentScroll / containerHeight);
+      
+      // Only update if section changed
+      if (currentSection !== activeSection) {
+        // Hide elements from previous sections
+        const allElements = document.querySelectorAll('.section-text-reveal');
+        allElements.forEach((el) => {
+          el.classList.remove('revealed');
+        });
+        
+        setActiveSection(currentSection);
+        
+        // Reveal elements in current section with staggered delay
+        const sectionElements = document.querySelectorAll(`[data-scroll-index="${currentSection}"]`);
+        sectionElements.forEach((el) => {
+          const delay = el.getAttribute('data-scroll-delay') || '0';
+          setTimeout(() => {
+            el.classList.add('revealed');
+          }, parseFloat(delay) * 1000);
+        });
+      }
+    };
+    
+    // Set up scroll event listener
+    containerRef.current.addEventListener('scroll', handleSectionChange);
+    
+    // Initially reveal the first section
+    setTimeout(() => {
+      const firstSectionElements = document.querySelectorAll('[data-scroll-index="0"]');
+      firstSectionElements.forEach((el) => {
+        const delay = el.getAttribute('data-scroll-delay') || '0';
+        setTimeout(() => {
+          el.classList.add('revealed');
+        }, parseFloat(delay) * 1000);
+      });
+    }, 500);
+    
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('scroll', handleSectionChange);
+      }
+      document.head.removeChild(style);
+    };
+  }, [activeSection]);
+  
   // Handle smooth scrolling for the text-swapping sections
   useEffect(() => {
     if (!containerRef.current || !sectionRef.current) return;
@@ -271,7 +357,10 @@ const HeroSection: React.FC = () => {
             {/* First section */}
             <div className="h-screen w-full flex items-center justify-center snap-start snap-section">
               <div className="text-center max-w-3xl mx-auto px-6">
-                <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h2 
+                  className="text-4xl md:text-6xl font-bold text-white mb-6 section-text-reveal" 
+                  data-scroll-index="0"
+                >
                   <ScrollAndSwapText
                     label="Your wellbeing solutions aren't cutting it."
                     offset={["0 0.1", "0 0.3"]}
@@ -279,7 +368,11 @@ const HeroSection: React.FC = () => {
                     containerRef={containerRef}
                   />
                 </h2>
-                <p className="text-xl text-gray-300">
+                <p 
+                  className="text-xl text-gray-300 section-text-reveal" 
+                  data-scroll-index="0"
+                  data-scroll-delay="0.3"
+                >
                   Scroll to discover why most solutions fail and how Thrive360 is different.
                 </p>
               </div>
@@ -288,12 +381,19 @@ const HeroSection: React.FC = () => {
             {/* Second section - Stat 1 */}
             <div className="h-screen w-full flex items-center justify-center snap-start snap-section bg-gradient-to-br from-thrive-purple-dark to-thrive-purple">
               <div className="text-center max-w-3xl mx-auto px-6">
-                <div className="mb-6 flex justify-center">
+                <div 
+                  className="mb-6 flex justify-center section-text-reveal" 
+                  data-scroll-index="1"
+                >
                   <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center">
                     <i className="fas fa-heart-broken text-3xl text-white"></i>
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h2 
+                  className="text-4xl md:text-6xl font-bold text-white mb-6 section-text-reveal"
+                  data-scroll-index="1"
+                  data-scroll-delay="0.2"
+                >
                   <ScrollAndSwapText
                     label="76% of employees experience burnout"
                     offset={["0 0.1", "0 0.3"]}
@@ -301,7 +401,11 @@ const HeroSection: React.FC = () => {
                     containerRef={containerRef}
                   />
                 </h2>
-                <p className="text-xl text-gray-300">
+                <p 
+                  className="text-xl text-gray-300 section-text-reveal"
+                  data-scroll-index="1"
+                  data-scroll-delay="0.4"
+                >
                   Traditional wellness programs aren't designed to address the root cause of mental health challenges.
                 </p>
               </div>
@@ -310,12 +414,19 @@ const HeroSection: React.FC = () => {
             {/* Third section - Stat 2 */}
             <div className="h-screen w-full flex items-center justify-center snap-start snap-section bg-gradient-to-br from-thrive-purple to-thrive-blue">
               <div className="text-center max-w-3xl mx-auto px-6">
-                <div className="mb-6 flex justify-center">
+                <div 
+                  className="mb-6 flex justify-center section-text-reveal" 
+                  data-scroll-index="2"
+                >
                   <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center">
                     <i className="fas fa-chart-line text-3xl text-white"></i>
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h2 
+                  className="text-4xl md:text-6xl font-bold text-white mb-6 section-text-reveal"
+                  data-scroll-index="2"
+                  data-scroll-delay="0.2"
+                >
                   <ScrollAndSwapText
                     label="91% of programs lack measurable outcomes"
                     offset={["0 0.1", "0 0.3"]}
@@ -323,7 +434,11 @@ const HeroSection: React.FC = () => {
                     containerRef={containerRef}
                   />
                 </h2>
-                <p className="text-xl text-gray-300">
+                <p 
+                  className="text-xl text-gray-300 section-text-reveal"
+                  data-scroll-index="2"
+                  data-scroll-delay="0.4"
+                >
                   Most solutions can't demonstrate real, measurable improvements in mental health and performance.
                 </p>
               </div>
@@ -332,12 +447,19 @@ const HeroSection: React.FC = () => {
             {/* Fourth section - Stat 3 */}
             <div className="h-screen w-full flex items-center justify-center snap-start snap-section bg-gradient-to-br from-thrive-blue to-thrive-teal">
               <div className="text-center max-w-3xl mx-auto px-6">
-                <div className="mb-6 flex justify-center">
+                <div 
+                  className="mb-6 flex justify-center section-text-reveal" 
+                  data-scroll-index="3"
+                >
                   <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center">
                     <i className="fas fa-brain text-3xl text-white"></i>
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h2 
+                  className="text-4xl md:text-6xl font-bold text-white mb-6 section-text-reveal"
+                  data-scroll-index="3"
+                  data-scroll-delay="0.2"
+                >
                   <ScrollAndSwapText
                     label="Thrive360 delivers 83% engagement"
                     offset={["0 0.1", "0 0.3"]}
@@ -345,7 +467,11 @@ const HeroSection: React.FC = () => {
                     containerRef={containerRef}
                   />
                 </h2>
-                <p className="text-xl text-gray-300">
+                <p 
+                  className="text-xl text-gray-300 section-text-reveal"
+                  data-scroll-index="3"
+                  data-scroll-delay="0.4"
+                >
                   Our neuroplastic approach creates lasting change through personalized, science-backed interventions.
                 </p>
               </div>
