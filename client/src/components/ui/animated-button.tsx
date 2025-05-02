@@ -45,15 +45,15 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   // Variant base styles
   const variantBaseStyles = {
-    primary: 'bg-[#6D3CA7] text-white',
-    secondary: 'bg-[#F5F2FF] text-[#6D3CA7] border border-[#988AD5]/40',
-    outline: 'bg-transparent text-[#6D3CA7] border-2 border-[#6D3CA7]',
-    gradient: 'text-white'
+    primary: 'bg-thrive-purple text-white',
+    secondary: 'bg-thrive-white text-thrive-purple border border-thrive-purple-light/40',
+    outline: 'bg-transparent text-thrive-purple border-2 border-thrive-purple',
+    gradient: 'button-gradient-thrive text-white'
   }[variant];
 
   // Gradient background for gradient variant
   const gradientStyle = variant === 'gradient' ? {
-    background: 'linear-gradient(to right, #6D3CA7, #3462AE)'
+    background: 'linear-gradient(to right, #6D3CA7, #3462AE)' // Fallback for non-tailwind contexts
   } : {};
 
   // Final combined class names

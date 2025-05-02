@@ -24,19 +24,15 @@
   --ring: 270 75% 50%;
   --radius: 0.5rem;
   
-  /* Thrive purple colors */
-  --thrive-purple: 270 75% 50%;
-  --thrive-purple-50: 270 75% 97%;
-  --thrive-purple-100: 270 75% 94%;
-  --thrive-purple-200: 270 75% 88%;
-  --thrive-purple-300: 270 75% 80%;
-  --thrive-purple-400: 270 75% 65%;
-  --thrive-purple-500: 270 75% 50%;
-  --thrive-purple-600: 270 75% 45%;
-  --thrive-purple-700: 270 75% 38%;
-  --thrive-purple-800: 270 75% 30%;
-  --thrive-purple-900: 270 75% 22%;
-  --thrive-purple-950: 270 75% 15%;
+  /* Thrive colors based on the brand style guide */
+  --thrive-purple-light: 255 48% 83%;  /* #988AD5 */
+  --thrive-purple: 267 42% 45%;        /* #6D3CA7 */
+  --thrive-purple-dark: 250 41% 40%;   /* #4F3C91 */
+  --thrive-purple-darker: 293 42% 11%; /* #220F26 */
+  --thrive-blue-light: 219 53% 44%;    /* #3462AE */
+  --thrive-blue: 219 53% 44%;          /* #3462AE */
+  --thrive-teal: 186 95% 70%;          /* #6DECF9 */
+  --thrive-white: 260 100% 98%;        /* #F5F2FF */
   
   /* Chart colors */
   --chart-1: 240 5.9% 10%;
@@ -88,8 +84,37 @@
     @apply min-h-screen w-full relative overflow-hidden py-20;
   }
 
+  /* Thrive Gradient Classes */
+  .bg-gradient-thrive {
+    @apply bg-gradient-to-b from-thrive-white via-thrive-purple-light/10 to-thrive-purple/20;
+  }
+  
+  .button-gradient-thrive {
+    @apply bg-gradient-to-r from-thrive-purple to-thrive-blue text-white;
+  }
+  
+  .hero-gradient-thrive {
+    @apply bg-gradient-to-b from-thrive-purple-dark via-thrive-purple to-thrive-blue-light;
+  }
+  
+  .card-gradient-thrive {
+    @apply bg-gradient-to-br from-white to-thrive-white;
+  }
+  
+  /* Section transitions */
+  .section-transition-top {
+    @apply absolute top-0 left-0 right-0 h-24 pointer-events-none z-10;
+    background: linear-gradient(to top, transparent, rgba(245, 242, 255, 0.5));
+  }
+
+  .section-transition-bottom {
+    @apply absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-10;
+    background: linear-gradient(to bottom, transparent, rgba(245, 242, 255, 0.5));
+  }
+  
+  /* Legacy gradient - keeping for backward compatibility */
   .gradient-bg {
-    @apply bg-gradient-to-br from-[#6D28D9] via-[#8B5CF6] to-[#A78BFA];
+    @apply bg-gradient-to-br from-thrive-purple via-thrive-purple-light to-thrive-blue-light;
   }
   
   .spotlight {

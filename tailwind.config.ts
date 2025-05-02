@@ -47,6 +47,20 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        thrive: {
+          purple: {
+            light: '#988AD5',     // Light purple
+            DEFAULT: '#6D3CA7',   // Main purple
+            dark: '#4F3C91',      // Dark purple
+            darker: '#220F26',    // Very dark purple
+          },
+          blue: {
+            light: '#3462AE',
+            DEFAULT: '#3462AE',
+          },
+          teal: '#6DECF9',        // Accent color
+          white: '#F5F2FF',       // Off-white with slight purple tint
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",

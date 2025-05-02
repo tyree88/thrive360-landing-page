@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ROUTES } from '@/lib/constants';
 import gsap from 'gsap';
 import AnimatedButton from '@/components/ui/animated-button';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
 
 const HeroSection: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -65,7 +66,12 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section id="hero" className="section flex items-center justify-center relative overflow-hidden bg-[#101219]">
+    <BackgroundWrapper
+      id="hero"
+      variant="hero"
+      className="section flex items-center justify-center"
+      showTransitionBottom={true}
+    >
       {/* Colorful gradient wave */}
       <svg 
         ref={waveRef}
@@ -76,9 +82,9 @@ const HeroSection: React.FC = () => {
       >
         <defs>
           <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#FF6B98" /> {/* Pink */}
-            <stop offset="50%" stopColor="#FF6B98" /> {/* Pink */}
-            <stop offset="100%" stopColor="#5D5FEF" /> {/* Purple-blue */}
+            <stop offset="0%" stopColor="#6D3CA7" /> {/* Thrive purple */}
+            <stop offset="50%" stopColor="#4F3C91" /> {/* Thrive purple dark */}
+            <stop offset="100%" stopColor="#3462AE" /> {/* Thrive blue */}
           </linearGradient>
         </defs>
         <path 
@@ -91,7 +97,7 @@ const HeroSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-32 relative z-10 text-center">
         <h1 
           ref={titleRef}
-          className="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight mx-auto max-w-5xl"
+          className="text-5xl md:text-7xl font-bold mb-8 leading-tight mx-auto max-w-5xl"
         >
           Systems that deliver<br />outcomes for<br />government.
         </h1>
@@ -102,10 +108,10 @@ const HeroSection: React.FC = () => {
         >
           <AnimatedButton 
             href={ROUTES.DEMO} 
-            variant="primary"
+            variant="secondary"
             size="lg"
             icon={<i className="fas fa-arrow-right"></i>}
-            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg"
+            className="shadow-lg"
           >
             Schedule a Demo
           </AnimatedButton>
@@ -121,7 +127,7 @@ const HeroSection: React.FC = () => {
           ))}
         </div>
       </div>
-    </section>
+    </BackgroundWrapper>
   );
 };
 
