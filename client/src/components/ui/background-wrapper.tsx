@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface BackgroundWrapperProps {
+interface BackgroundWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   variant?: 'default' | 'hero' | 'light' | 'dark';
@@ -17,6 +17,7 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
   showPatterns = true,
   showTransitionTop = false,
   showTransitionBottom = false,
+  ...props
 }) => {
   // Determine background gradient based on variant
   const bgClasses = {
@@ -33,6 +34,7 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
         bgClasses,
         className
       )}
+      {...props}
     >
       {/* Subtle pattern overlays for texture and depth */}
       {showPatterns && (

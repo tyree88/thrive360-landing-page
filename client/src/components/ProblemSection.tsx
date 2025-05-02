@@ -3,17 +3,19 @@ import { FeatureIcon } from '@/assets/icons';
 import { PROBLEM_STATS, ROUTES } from '@/lib/constants';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import AnimatedButton from '@/components/ui/animated-button';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import GradientCard from '@/components/ui/gradient-card';
 
 const ProblemSection: React.FC = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section 
-      id="problem" 
-      className="section relative overflow-hidden"
-      style={{
-        background: "linear-gradient(to bottom, #F5F2FF, #FFF, #F5F2FF)"
-      }}
+    <BackgroundWrapper
+      id="problem"
+      variant="light"
+      className="section"
+      showTransitionTop={true}
+      showTransitionBottom={true}
     >
       <ContainerScroll
         titleComponent={
@@ -50,13 +52,18 @@ const ProblemSection: React.FC = () => {
                 stat.color === 'blue' ? '#4F3C91' : // thrive-purple-dark
                 '#988AD5'; // thrive-purple-light
               
+              const borderVariant = 
+                stat.color === 'red' ? 'primary' :
+                stat.color === 'amber' ? 'secondary' :
+                stat.color === 'blue' ? 'accent' :
+                'light';
+              
               return (
-                <div 
+                <GradientCard
                   key={index}
-                  className="problem-stat p-6 bg-white rounded-2xl shadow-lg border border-[#988AD5]/20 flex flex-col items-center justify-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                  style={{
-                    background: "linear-gradient(to bottom, #ffffff, #f8f5ff)",
-                  }}
+                  bgVariant="light"
+                  borderVariant={borderVariant as any}
+                  className="p-6 flex flex-col items-center justify-center text-center"
                 >
                   <div 
                     className="mb-3 w-16 h-16 rounded-full flex items-center justify-center"
@@ -75,7 +82,7 @@ const ProblemSection: React.FC = () => {
                     {stat.percentage}
                   </h3>
                   <p className="text-gray-600 text-lg">{stat.description}</p>
-                </div>
+                </GradientCard>
               );
             })}
           </div>
@@ -99,7 +106,7 @@ const ProblemSection: React.FC = () => {
           See the Solution
         </AnimatedButton>
       </div>
-    </section>
+    </BackgroundWrapper>
   );
 };
 
