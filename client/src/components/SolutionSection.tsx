@@ -7,6 +7,7 @@ import BackgroundWrapper from '@/components/ui/background-wrapper';
 import GradientCard from '@/components/ui/gradient-card';
 import AnimatedButton from '@/components/ui/animated-button';
 import GridScrollTransition from '@/components/ui/grid-scroll-transition';
+import { ThriveCardsAnimation } from '@/components/ui/thrive-cards-animation';
 
 const SolutionSection: React.FC = () => {
   // Using useSequence for the feature list items
