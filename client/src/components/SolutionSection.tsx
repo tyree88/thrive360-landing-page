@@ -3,6 +3,9 @@ import { FeatureIcon } from '@/assets/icons';
 import { SOLUTION_FEATURES, ROUTES } from '@/lib/constants';
 import { useFadeIn, useSequence } from '@/hooks/use-animation';
 import gsap from 'gsap';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import GradientCard from '@/components/ui/gradient-card';
+import AnimatedButton from '@/components/ui/animated-button';
 
 const SolutionSection: React.FC = () => {
   // Using useSequence for the feature list items
@@ -18,7 +21,7 @@ const SolutionSection: React.FC = () => {
     }
   }, []);
   
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subheadingRef = useRef<HTMLParagraphElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
@@ -61,13 +64,16 @@ const SolutionSection: React.FC = () => {
   }, []);
 
   return (
-    <section 
-      ref={sectionRef}
-      id="solution" 
-      className="section bg-gray-50 flex items-center justify-center relative"
+    <BackgroundWrapper
+      id="solution"
+      variant="light"
+      className="section flex items-center justify-center"
+      showTransitionTop={true}
+      showTransitionBottom={true}
     >
-      <div className="max-w-7xl mx-auto px-6 py-20 w-full">
-        <div className="text-center mb-16">
+      <div ref={sectionRef} className="w-full">
+        <div className="max-w-7xl mx-auto px-6 py-20 w-full">
+          <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 text-sm font-medium bg-thrive-purple-100 text-thrive-purple-700 rounded-full mb-4">
             Our Solution
           </span>
@@ -197,8 +203,9 @@ const SolutionSection: React.FC = () => {
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-gradient-to-br from-thrive-purple-300 to-thrive-purple-500 rounded-full opacity-10 z-0"></div>
           </div>
         </div>
+        </div>
       </div>
-    </section>
+    </BackgroundWrapper>
   );
 };
 
