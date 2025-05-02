@@ -1,28 +1,34 @@
-@@ .. @@
-   .section {
--    @apply min-h-screen w-full relative overflow-hidden py-20;
-+    @apply min-h-screen w-full relative overflow-hidden py-20 bg-opacity-90;
-   }
-   
-   .hide-scrollbar {
-@@ .. @@
-   /* Thrive Gradient Classes */
-   .bg-gradient-thrive {
--    @apply bg-gradient-to-b from-thrive-white via-thrive-purple-light/10 to-thrive-purple/20;
-+    @apply bg-gradient-to-b from-thrive-white/90 via-thrive-purple-light/80 to-thrive-purple/70;
-   }
-   
-   .button-gradient-thrive {
-@@ .. @@
-    @apply bg-gradient-to-b from-thrive-white/90 via-thrive-purple-light/80 to-thrive-purple/70;
-   }
-   
-   .hero-gradient-thrive {
--    @apply bg-gradient-to-b from-thrive-purple-dark via-thrive-purple to-thrive-blue-light;
-+    @apply bg-gradient-to-b from-thrive-purple-dark/90 via-thrive-purple/90 to-thrive-blue-light/90;
-   }
-   
-   .card-gradient-thrive {
--    @apply bg-gradient-to-br from-white to-thrive-white;
-+    @apply bg-gradient-to-br from-white/95 to-thrive-white/95;
-   }
+.section {
+  @apply min-h-screen w-full relative overflow-hidden py-20 bg-opacity-90;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Grid Item Styling */
+.grid-item {
+  @apply bg-white rounded-lg shadow-lg p-6;
+}
+
+/* Thrive Gradient Classes */
+.bg-gradient-thrive {
+  @apply bg-gradient-to-b from-thrive-white/90 via-thrive-purple-light/80 to-thrive-purple/70;
+}
+
+.button-gradient-thrive {
+  @apply bg-gradient-to-b from-thrive-white/90 via-thrive-purple-light/80 to-thrive-purple/70;
+}
+
+.hero-gradient-thrive {
+  @apply bg-gradient-to-b from-thrive-purple-dark/90 via-thrive-purple/90 to-thrive-blue-light/90;
+}
+
+.card-gradient-thrive {
+  @apply bg-gradient-to-br from-white/95 to-thrive-white/95;
+}
