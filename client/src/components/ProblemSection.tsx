@@ -6,8 +6,43 @@ import AnimatedButton from '@/components/ui/animated-button';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import GradientCard from '@/components/ui/gradient-card';
 import GridScrollTransition from '@/components/ui/grid-scroll-transition';
+import ScrollGridMotion from '@/components/ui/scroll-grid-motion';
+import SectionPinningAnimation from '@/components/ui/section-pinning-animation';
+import ParallaxShapes from '@/components/ui/parallax-shapes';
 import SectionScrollLink from '@/components/ui/section-scroll-link';
 import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Define shapes for parallax background
+const PROBLEM_SHAPES = [
+  {
+    shape: 'blob' as const,
+    size: 18, 
+    position: { bottom: '5%', right: '5%' },
+    color: '#F5F2FF',
+    depth: 0.2,
+    opacity: 0.05
+  },
+  {
+    shape: 'circle' as const,
+    size: 10,
+    position: { top: '15%', left: '8%' },
+    color: '#988AD5',
+    depth: 0.3,
+    opacity: 0.04
+  },
+  {
+    shape: 'square' as const,
+    size: 14,
+    position: { bottom: '25%', left: '20%' },
+    color: '#3462AE',
+    depth: 0.15,
+    opacity: 0.03
+  },
+];
 
 const ProblemSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -17,6 +52,7 @@ const ProblemSection: React.FC = () => {
   useEffect(() => {
     if (!transitionRef.current) return;
 
+    // When using the new component, target the elements differently
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: transitionRef.current,
@@ -26,21 +62,27 @@ const ProblemSection: React.FC = () => {
       }
     });
 
-    tl.fromTo(
-      '.transition-item',
-      { y: 0, opacity: 0 },
-      { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
-    );
+    // Target all grid items within the transition section
+    const gridItems = transitionRef.current.querySelectorAll('.scroll-grid-item');
+    if (gridItems.length) {
+      tl.fromTo(
+        gridItems,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
+      );
+    }
   }, []);
 
   return (
     <BackgroundWrapper
       id="problem"
       variant="light"
-      className="section"
+      className="section relative overflow-hidden"
       showTransitionTop={true}
       showTransitionBottom={true}
     >
+      {/* Add parallax shapes for depth */}
+      <ParallaxShapes shapes={PROBLEM_SHAPES} className="z-0" />
       <ContainerScroll
         titleComponent={
           <div className="text-center">
@@ -122,12 +164,14 @@ const ProblemSection: React.FC = () => {
         </p>
       </div>
       
-      {/* Transition to Solution Section */}
-      <div 
-        ref={transitionRef}
-        className="w-full py-16"
+      {/* Transition to Solution Section using SectionPinningAnimation */}
+      <SectionPinningAnimation
+        pinDuration={150}
+        topSpacing={80}
+        backgroundClassName="w-full py-16 bg-gradient-to-b from-white to-gray-50"
+        contentClassName="max-w-7xl mx-auto px-6"
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <div ref={transitionRef}>
           <div className="text-center mb-12">
             <span className="inline-block px-3 py-1 text-sm font-medium bg-thrive-purple-100 text-thrive-purple-700 rounded-full mb-4">
               The Future of Mental Health
@@ -137,48 +181,53 @@ const ProblemSection: React.FC = () => {
             </h3>
           </div>
           
-          <GridScrollTransition columnsSmall={2} columnsLarge={4} gridClassName="gap-6 md:gap-8 mb-12">
-            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #8776D5, #6D3CA7)' }}>
+          <ScrollGridMotion
+            columnsSmall={2}
+            columnsLarge={4}
+            gridClassName="gap-6 md:gap-8 mb-12"
+            fadeItems={true}
+          >
+            <div className="h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #8776D5, #6D3CA7)' }}>
               <div className="p-4 h-full flex flex-col justify-end text-white">
                 <h4 className="font-bold text-lg mb-1">AI-Driven</h4>
                 <p className="text-sm opacity-90">Personalized mental health at scale</p>
               </div>
             </div>
             
-            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #3462AE, #1E3A8A)' }}>
+            <div className="h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #3462AE, #1E3A8A)' }}>
               <div className="p-4 h-full flex flex-col justify-end text-white">
                 <h4 className="font-bold text-lg mb-1">Neuroplastic</h4>
                 <p className="text-sm opacity-90">Evidence-based techniques</p>
               </div>
             </div>
             
-            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6DECF9, #3462AE)' }}>
+            <div className="h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6DECF9, #3462AE)' }}>
               <div className="p-4 h-full flex flex-col justify-end text-white">
                 <h4 className="font-bold text-lg mb-1">Engaging</h4>
                 <p className="text-sm opacity-90">80% completion rates</p>
               </div>
             </div>
             
-            <div className="transition-item h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #F5F2FF, #988AD5)' }}>
+            <div className="h-64 rounded-xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(to bottom right, #F5F2FF, #988AD5)' }}>
               <div className="p-4 h-full flex flex-col justify-end text-gray-900">
                 <h4 className="font-bold text-lg mb-1">Measurable</h4>
                 <p className="text-sm opacity-90">Real impact tracking</p>
               </div>
             </div>
-          </GridScrollTransition>
+          </ScrollGridMotion>
           
-          <div className="text-center mt-8">
+          <div className="text-center mt-12 mb-8">
             <SectionScrollLink
               sourceId="problem"
               targetId="solution"
               direction="down"
-              className="inline-block"
+              className="inline-block animate-bounce"
             >
               See the solution
             </SectionScrollLink>
           </div>
         </div>
-      </div>
+      </SectionPinningAnimation>
     </BackgroundWrapper>
   );
 };

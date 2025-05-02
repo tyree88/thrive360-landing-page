@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 // Define shapes for parallax background
 const HERO_SHAPES = [
   {
-    shape: 'blob',
+    shape: 'blob' as const,
     size: 15, 
     position: { top: '10%', left: '5%' },
     color: '#6D3CA7',
@@ -24,7 +24,7 @@ const HERO_SHAPES = [
     opacity: 0.05
   },
   {
-    shape: 'circle',
+    shape: 'circle' as const,
     size: 8,
     position: { top: '30%', right: '10%' },
     color: '#3462AE',
@@ -32,14 +32,14 @@ const HERO_SHAPES = [
     opacity: 0.05
   },
   {
-    shape: 'square',
+    shape: 'square' as const,
     size: 12,
     position: { bottom: '15%', left: '15%' },
     color: '#988AD5',
     depth: 0.1,
     opacity: 0.04
   },
-] as const;
+];
 
 const HeroSection: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
