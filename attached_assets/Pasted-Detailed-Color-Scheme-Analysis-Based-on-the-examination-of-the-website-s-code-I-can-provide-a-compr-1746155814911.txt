@@ -1,0 +1,73 @@
+Detailed Color Scheme Analysis
+Based on the examination of the website's code, I can provide a comprehensive breakdown of the color scheme used throughout the application:
+
+Primary Brand Colors (Thrive Colors)
+Purple Palette
+Light Purple: #988AD5 (thrive-purple-light) - Used for subtle highlights, backgrounds, and gradient transitions
+Main Purple: #6D3CA7 (thrive-purple) - Primary brand color used for buttons, important UI elements, and accent features
+Dark Purple: #4F3C91 (thrive-purple-dark) - Used for depth and contrast in gradients and backgrounds
+Very Dark Purple: #220F26 (thrive-purple-darker) - Used for hero section background and darkest areas
+Blue Palette
+Blue: #3462AE (thrive-blue) - Secondary brand color used in gradients and for accent elements
+Light Blue: #3462AE (thrive-blue-light) - Used in gradients and lighter blue accents
+Accent Colors
+Teal: #6DECF9 (thrive-teal) - Used as an accent color for highlights and call-to-action elements
+White: #F5F2FF (thrive-white) - A very light purple-tinted white used for backgrounds and text
+Gradient Combinations
+Main Background Gradient:
+
+
+bg-gradient-to-b from-thrive-white via-thrive-purple-light/10 to-thrive-purple/20
+Creates a subtle top-to-bottom gradient from light purple-tinted white to a translucent purple
+
+Button Gradient:
+
+
+bg-gradient-to-r from-thrive-purple to-thrive-blue
+Creates a horizontal gradient from purple to blue for important buttons
+
+Hero Background Gradient:
+
+
+bg-gradient-to-b from-thrive-purple-dark via-thrive-purple to-thrive-blue-light
+Creates a dramatic top-to-bottom gradient from dark purple through main purple to light blue
+
+UI Component Color Applications
+Cards and Elements
+Feature cards use varying background colors:
+Light backgrounds: bg-white, bg-gray-100
+Branded backgrounds: bg-thrive-purple-light/10, bg-thrive-blue/10, bg-thrive-teal/10
+Card borders use matching colors with transparency: border-thrive-purple-light/30, border-thrive-blue/30, etc.
+Text Colors
+Headings often use: text-gray-900, text-white, text-thrive-purple
+Body text uses: text-gray-600, text-thrive-white opacity-90
+Interactive Elements
+Primary buttons: White on purple background (bg-white text-thrive-purple)
+Secondary buttons: Transparent with white border (border-white text-white hover:bg-white/10)
+Special Effects
+Spotlight Effects: Used in the hero section with the brand purples (#988AD5 and #6D3CA7)
+
+Radial Gradients: Used as subtle texture overlays:
+
+
+bg-[radial-gradient(circle_at_30%_20%,rgba(109,60,167,0.2)_0%,transparent_50%)]
+Section Transitions: Smooth gradients between sections:
+
+
+background: linear-gradient(to top, transparent, rgba(245, 242, 255, 0.5));
+Dark Mode Support
+The application includes a complete dark mode color palette that preserves the brand identity while creating a comfortable dark experience:
+
+Background shifts from white to very dark (222.2 84% 4.9%)
+Primary brand purple is preserved (267 42% 45%)
+Accent colors are darkened and desaturated
+Text colors are inverted for proper contrast
+Design System Approach
+The color implementation follows a design system approach with:
+
+Base HSL variables for themeable colors (light/dark mode support)
+Direct hex values for brand colors that remain consistent
+Transparency variations for building depth and hierarchy
+Consistent color naming conventions (thrive-[color]-[shade])
+Complementary color combinations for different UI patterns (cards, buttons, etc.)
+This comprehensive, well-structured color scheme creates a cohesive visual identity focused on the purple-blue palette that conveys trust, innovation, and a calm, professional feel appropriate for a mental health technology platform.
