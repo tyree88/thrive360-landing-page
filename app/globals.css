@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 270 75% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 270 75% 95%;
+  --accent-foreground: 270 70% 40%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 270 75% 50%;
+  --radius: 0.5rem;
+  
+  /* Thrive colors */
+  --thrive-purple-light: 255 48% 83%;
+  --thrive-purple: 267 42% 45%;
+  --thrive-purple-dark: 250 41% 40%;
+  --thrive-purple-darker: 293 42% 11%;
+  --thrive-blue-light: 219 53% 44%;
+  --thrive-blue: 219 53% 44%;
+  --thrive-teal: 186 95% 70%;
+  --thrive-white: 260 100% 98%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 270 75% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .section {
+    @apply min-h-screen w-full relative overflow-hidden py-20 bg-opacity-90;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .grid-item {
+    @apply rounded-lg overflow-hidden transition-all duration-500;
+  }
+
+  .button-gradient-thrive {
+    @apply bg-gradient-to-r from-thrive-purple/90 to-thrive-blue/90 text-white backdrop-blur-sm;
+  }
+  
+  .card-gradient-thrive {
+    @apply bg-gradient-to-br from-white/95 to-thrive-white/95;
+  }
+  
+  .section-transition-top {
+    @apply absolute top-0 left-0 right-0 h-24 pointer-events-none z-10;
+    background: linear-gradient(to top, transparent, rgba(245, 242, 255, 0.5));
+  }
+
+  .section-transition-bottom {
+    @apply absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-10;
+    background: linear-gradient(to bottom, transparent, rgba(245, 242, 255, 0.5));
+  }
+}

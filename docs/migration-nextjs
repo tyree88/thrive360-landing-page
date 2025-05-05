@@ -1,0 +1,192 @@
+# Progress Update (as of latest migration)
+
+**Assessment Phase**
+- Analyzed current project structure; partial Next.js setup confirmed
+- Examined key animation-heavy components (ProblemSection, SphereSection)
+- Identified animation patterns (GSAP, Framer Motion)
+- Reviewed animation hooks/utilities
+- Checked database schema and Drizzle ORM setup
+
+**Implementation Phase**
+1. **Database Integration**
+   - Created robust connection utility at `app/lib/db/index.ts`
+   - Implemented connection pooling for serverless
+   - Added dev mode connection reuse
+2. **API Route Implementation**
+   - Set up Next.js API structure at `app/api/`
+   - Created user management endpoints at `app/api/users/route.ts`
+   - Added error handling and Zod validation
+3. **Animation System Enhancement**
+   - Created `use-scroll-animation.tsx` with Next.js optimizations
+   - Added client-side safeguards for server components
+   - Implemented specialized hooks: `useScrollTriggerAnimation`, `useScrollProgressAnimation`, `useParallaxScroll`, `useBatchReveal`
+4. **Component Migration**
+   - Created reusable `ScrollParallax` component
+   - Updated `ProblemSection` and `SphereSection` with Next.js best practices and performance enhancements
+
+**Next Steps**
+- Complete remaining component migrations
+- Set up optimized image handling with Next.js `<Image />`
+- Configure dynamic imports for code splitting
+- Implement testing utilities and validation strategies
+- Finalize deployment configuration
+
+# Thrive360 Bolt Next.js Migration PRD
+
+## Migration Strategy Overview
+
+- [x] High-level migration approach: Incrementally migrate components and functionality from the existing React app (`client/` directory) to the Next.js app (`app/` directory). Start with non-animated components and then address animation systems. API routes will be transformed from Express.js to Next.js API routes.
+- [x] Key architectural changes: Transition from a client-side routed React app to Next.js's file-based routing. Re-organize components into the `app/` directory and adapt routing logic. Replace the Express.js backend with Next.js API routes.
+- [ ] Risk assessment and mitigation strategies: Assess potential issues like animation compatibility with SSR, data fetching differences, and build/deployment complexities. Implement mitigation strategies: Thoroughly test animations after migration, use Next.js's data fetching methods, and carefully configure the build and deployment pipeline.
+- [ ] Timeline estimation: The migration is estimated to take 4-6 weeks, with the first 2 weeks focused on setting up the Next.js project and migrating core components, 1-2 weeks on API and backend integration, and 1-2 weeks on animation migration and testing.
+- [x] Summary: The migration will be an incremental process, moving components from the existing React app to Next.js, adapting routing and data fetching, addressing animation challenges, and carefully testing each step. The estimated timeline is 4-6 weeks.
+
+## Component Migration Plan
+
+- [x] Component mapping: Map components like HeroSection, Navbar, Footer, and CTASection to the `app/` directory as individual components. Organize sections like CaseStudiesSection, ImpactSection, JourneySection, ProblemSection, SolutionSection, TestimonialsSection, and SphereSection as sections within a specific page or as reusable components. The `ui/` directory contains reusable UI components that can be used throughout the Next.js application.
+- [x] Animation system adaptation: Ensure compatibility with Next.js's server-side rendering for GSAP and Framer Motion. GSAP animations might need to be initialized on the client-side using `useEffect` to avoid SSR issues. Framer Motion components should be checked for SSR compatibility and potentially wrapped in `Suspense` if needed.
+- [x] State management considerations: Examine existing components for state management solutions (e.g., useState, useContext, Redux). If Redux or similar is used, consider migrating to a Next.js-compatible solution or using client-side state management.
+- [x] Required modifications: Adapt components to use Next.js's data fetching methods (e.g., getServerSideProps, getStaticProps) instead of direct API calls. Adjust animation initialization logic for SSR compatibility. Adjust styling to work seamlessly with Tailwind CSS in Next.js.
+
+## API and Backend Migration Plan
+
+- [ ] API route structure: Transform Express.js routes into Next.js API routes located in the `app/api` directory. Each Express.js route should have a corresponding Next.js API route with the same functionality.
+- [ ] Database connection strategy: Adapt the database connection strategy for Next.js's serverless environment. Use a connection pool to efficiently manage database connections. Use the `DATABASE_URL` environment variable to configure the connection pool.
+- [ ] Authentication and session management: Implement authentication and session management using Next.js's API routes and middleware. Adapt existing authentication logic from Express.js to work with Next.js. Consider using libraries like NextAuth.js for simplified authentication.
+- [ ] Data fetching optimization: Optimize data fetching using Next.js's built-in data fetching methods (getServerSideProps, getStaticProps, getStaticPaths). Implement caching strategies to reduce database load and improve performance. Use efficient database queries and indexing to minimize data retrieval time.
+
+## Animation System Migration
+
+- [ ] GSAP integration: Adapt the `useFadeIn`, `useParallax`, and `useSequence` hooks to work in Next.js. Ensure that GSAP and ScrollTrigger are registered only on the client-side using `useEffect`. Consider creating a separate utility file for GSAP-related functions.
+- [ ] Framer Motion adaptation: Check Framer Motion components for SSR compatibility. If issues arise, wrap the components in `Suspense` or use dynamic imports with `ssr: false`. Ensure that animations are properly initialized and triggered within the Next.js lifecycle.
+- [ ] Scroll-based animations: Adapt scroll-based animations to work with Next.js routing. Ensure that animations are properly triggered when navigating between pages. Use libraries like `lenis` or `locomotive-scroll` for smooth scrolling and consistent animation behavior.
+- [ ] Client-side initialization: Initialize animations on the client-side using `useEffect` to ensure that GSAP and Framer Motion are properly loaded and initialized after the component has mounted. Use a layout effect (`useLayoutEffect`) if necessary to avoid layout shifts.
+
+## Build and Deployment Strategy
+
+- [ ] Development environment setup: Set up a local development environment with Node.js and npm or yarn. Configure environment variables for database connections and API keys. Use a tool like `vercel dev` or `next dev` for local development.
+- [ ] Build configuration: Configure the Next.js build process using `next.config.js` or `next.config.mjs`. Optimize build settings for production, including minification, code splitting, and image optimization. Use environment variables to configure different build settings for different environments.
+- [ ] Deployment pipeline: Set up a CI/CD pipeline using tools like Vercel, Netlify, or GitHub Actions. Automate the build and deployment process to ensure consistent and reliable deployments. Configure environment variables for production and staging environments.
+- [ ] Environment variable management: Use a tool like `dotenv` or `next/config` to manage environment variables. Store sensitive information securely and avoid committing environment variables to the repository. Configure different environment variables for different environments (development, staging, production).
+
+## Testing and Validation Plan
+
+- [ ] Component testing: Implement component testing using tools like Jest and React Testing Library. Test critical component functionality, including rendering, state management, and event handling. Focus on testing components with complex logic or animations.
+- [ ] API endpoint testing: Create API endpoint tests using tools like Jest and Supertest. Validate API responses, including status codes, data formats, and error handling. Ensure that API endpoints are properly secured and authenticated.
+- [ ] Animation behavior validation: Verify that animation behavior matches the original implementation. Use visual regression testing tools to compare screenshots or recordings of animations before and after the migration. Manually test animations on different devices and browsers.
+- [ ] End-to-end testing: Implement end-to-end testing using tools like Cypress or Playwright. Test critical user flows, including navigation, form submissions, and data display. Ensure that the application functions correctly from the user's perspective.
+
+## HeroSection Migration Status
+- [x] The `HeroSection` component has been moved to the `app/components` directory.
+- [x] Import paths have been updated.
+- [x] GSAP animations are initialized within `useEffect`.
+
+## Navbar Migration Status
+- [x] The `Navbar` component has been moved to the `app/components` directory.
+- [x] Import paths have been updated.
+- [ ] Responsiveness has been verified. (Next step)
+- [ ] Correct links have been verified. (Next step)
+
+## Footer & FloatingCTA Status
+- [x] Footer and FloatingCTA are client components and are located in `app/components/ui`.
+
+---
+
+# Migration Steps & Verification Checklist
+
+## Migration Steps
+
+1. **Remove Legacy Pages Router Artifacts**
+   - [x] Legacy `/app/pages` directory and files have been moved to `/app/pages_to_delete` and are ready for removal.
+
+2. **Organize Section and UI Components**
+   - [x] All section components (e.g., CTASection, HeroSection) are in `/app/components/sections`.
+   - [x] All UI components (e.g., Navbar, Footer, FloatingCTA) are in `/app/components/ui`.
+   - [x] All imports use absolute paths.
+
+3. **Refactor Main Page and Layout**
+   - [x] `app/layout.tsx` contains only global providers and shared UI (Navbar, Footer, etc.).
+   - [x] `app/page.tsx` statically imports and renders section components in the desired order.
+
+4. **Client vs. Server Components**
+   - [x] 'use client' has been added to all section components that use hooks, state, or effects (CTASection updated).
+   - [x] Pure presentational or data-fetching components remain as server components.
+
+5. **Remove/Refactor Deprecated Patterns**
+   - [ ] Remove any direct DOM manipulation unless absolutely necessary.
+   - [ ] Remove unused or duplicate code and CSS files.
+
+6. **Optimize Dynamic Imports and Suspense**
+   - [x] Dynamic imports are used for heavy or client-only components.
+   - [x] Avoid wrapping the entire page in `<Suspense>` unless needed for async server components.
+
+7. **Technical Debt & Best Practices**
+   - [ ] Update dependencies in `package.json` to latest stable versions.
+   - [ ] Use TypeScript everywhere.
+   - [x] Enforce absolute imports via `tsconfig.json` paths.
+   - [ ] Lint and format with ESLint and Prettier.
+
+8. **Performance Optimizations**
+   - [ ] Use Next.js `<Image />` for all images.
+   - [ ] Audit bundle size with `next build` and address large dependencies.
+
+9. **Testing**
+   - [ ] Update or add tests using Jest and React Testing Library.
+   - [ ] Test all routes, forms, and UI interactions.
+
+10. **Verification**
+    - [ ] Use the checklist below to verify the migration is complete and robust.
+
+---
+
+## Verification Checklist
+
+### 1. Project Structure & Organization
+- [x] All legacy `/app/pages` files and directories have been moved to `/app/pages_to_delete`.
+- [x] All section components are in `/app/components/sections`.
+- [x] All UI components are in `/app/components/ui`.
+- [x] All hooks are in `/app/hooks`.
+- [x] All utilities are in `/app/lib` or `/shared`.
+- [x] All imports use absolute paths.
+
+### 2. Routing & Layout
+- [x] Only the App Router (`/app/page.tsx`, `/app/layout.tsx`) is used for routing.
+- [x] Navbar and Footer are included in `layout.tsx` (not duplicated in every page).
+- [x] All routes render the correct content and sections in the right order.
+
+### 3. Component Modernization
+- [x] All client components (using hooks, state, or effects) start with `'use client'` (CTASection updated).
+- [ ] No direct DOM manipulation except where absolutely necessary.
+- [ ] No unused or dead code remains in the codebase.
+
+### 4. Styling & Assets
+- [ ] All global styles are in `/app/globals.css` (or `/app/index.css` if used).
+- [ ] No unused CSS files remain.
+- [ ] All images use Next.js `<Image />` for optimization.
+
+### 5. Data Fetching & API
+- [ ] All data fetching is done using Next.js server components or API routes as appropriate.
+- [ ] All API endpoints are in `/app/api` and function as expected.
+
+### 6. Performance & Best Practices
+- [x] Dynamic imports are only used for heavy or client-only components.
+- [ ] Bundle size is reasonable (check with `next build`).
+- [ ] No console errors or warnings in development or production.
+
+### 7. Testing
+- [ ] All unit and integration tests pass (Jest, React Testing Library).
+- [ ] All E2E tests pass (Cypress, Playwright, etc.).
+- [ ] All critical user flows (navigation, forms, etc.) are tested.
+
+### 8. Deployment
+- [ ] The app builds successfully with `next build`.
+- [ ] The app deploys successfully to Vercel or your chosen platform.
+- [ ] Environment variables are set up correctly for all environments.
+
+### 9. Documentation
+- [ ] All new conventions and folder structures are documented for the team.
+- [ ] This checklist is complete and up to date.
+
+---
+
+**Tip:** Use this checklist as part of your PR review and QA process to ensure a robust migration.
