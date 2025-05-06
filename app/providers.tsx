@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import { AnimationProvider } from "@/context/AnimationContext";
+import { AnimationProvider } from "@/providers/animation-provider";
 import { usePerformanceMonitor } from "@/lib/performance-monitor";
 import { useWebVitalsMonitor } from "@/lib/web-vitals-monitor";
 

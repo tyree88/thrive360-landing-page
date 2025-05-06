@@ -50,7 +50,7 @@ export default function RootLayout({
           }
         `}} />
       </head>
-      <body className="min-h-screen bg-gradient-to-b from-white to-gray-50 antialiased">
+      <body className="min-h-screen bg-gradient-to-b from-white to-gray-50 antialiased" suppressHydrationWarning>
         <Providers>
           <Suspense fallback={<div className="critical-hero" />}>
             {children}

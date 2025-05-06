@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/animation-scripts.tsx -> gsap\":{\"id\":\"app/animation-scripts.tsx -> gsap\",\"files\":[]},\"app/animation-scripts.tsx -> gsap/ScrollToPlugin\":{\"id\":\"app/animation-scripts.tsx -> gsap/ScrollToPlugin\",\"files\":[]},\"app/animation-scripts.tsx -> gsap/ScrollTrigger\":{\"id\":\"app/animation-scripts.tsx -> gsap/ScrollTrigger\",\"files\":[]}}"

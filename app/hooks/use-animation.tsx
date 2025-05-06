@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
-// Register the ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
+// Register the ScrollTrigger plugin only on client side
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface FadeInOptions {
   y?: number;
@@ -236,17 +238,29 @@ export const useSequence = (
 
 export const useScrollTriggerAnimation = (callback: () => void, dependencies: any[] = []) => {
   useEffect(() => {
-    // Always register ScrollTrigger (safe to call multiple times)
-    gsap.registerPlugin(ScrollTrigger);
+    // Only run on client side
+    if (typeof window === 'undefined') return;
     
-    // Create a context to make cleanup easier
-    const ctx = gsap.context(() => {
-      callback();
-    });
+    // Small delay to ensure hydration is complete
+    const timeoutId = setTimeout(() => {
+      // Always register ScrollTrigger (safe to call multiple times)
+      if (typeof window !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+      
+      // Create a context to make cleanup easier
+      const ctx = gsap.context(() => {
+        callback();
+      });
+      
+      // Clean up all ScrollTriggers when component unmounts
+      return () => {
+        ctx.revert();
+      };
+    }, 150);
     
-    // Clean up all ScrollTriggers when component unmounts
     return () => {
-      ctx.revert();
+      clearTimeout(timeoutId);
     };
   }, dependencies);
 };
