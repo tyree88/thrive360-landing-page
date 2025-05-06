@@ -72,16 +72,31 @@ export const IMPACT_STATS = [
 
 export const PROBLEM_STATS = [
   {
+    id: 'stress',
     icon: 'fa-brain',
     color: '#6D3CA7',
-    percentage: '60%',
-    description: '60% of employees report high stress levels.'
+    value: 67,
+    unit: '%',
+    percentage: '67%',
+    description: 'Of employees report decreased productivity due to mental health challenges'
   },
   {
-    icon: 'fa-heart',
-    color: '#E57373',
-    percentage: '40%',
-    description: '40% do not seek help due to stigma.'
+    id: 'engagement',
+    icon: 'fa-users',
+    color: '#3462AE',
+    value: 23,
+    unit: '%',
+    percentage: '23%',
+    description: 'Average engagement rate with traditional wellness programs'
+  },
+  {
+    id: 'cost',
+    icon: 'fa-chart-line',
+    color: '#4F3C91',
+    value: 300,
+    unit: 'B',
+    percentage: '$300B',
+    description: 'Annual cost of employee wellness issues to businesses globally'
   },
 ];
 
@@ -121,6 +136,24 @@ export const SOLUTION_FEATURES = [
     color: '#3B82F6',
     title: 'AI-powered',
     description: 'Smart personalization for every user.'
+  },
+  {
+    icon: 'fa-user-friends',
+    color: '#10B981',
+    title: 'Community-driven',
+    description: 'Build supportive networks within organizations.'
+  },
+  {
+    icon: 'fa-chart-line',
+    color: '#4F3C91',
+    title: 'Data-informed',
+    description: 'Actionable insights for measurable improvements.'
+  },
+  {
+    icon: 'fa-lightbulb',
+    color: '#F59E0B',
+    title: 'Engaging Content',
+    description: 'Interactive experiences that boost commitment.'
   },
 ];
 
