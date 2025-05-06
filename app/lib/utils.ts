@@ -1,56 +1,49 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
+/**
+ * Combines class names using clsx and tailwind-merge
+ * This utility is used for conditional class application
+ */
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
-export function scrollToSection(id: string) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-export function formatThousands(num: number): string {
+/**
+ * Format a number with commas as thousands separators
+ */
+export function formatNumber(num: number): string {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// Used for animation delays based on array index
-export function staggerDelay(index: number, baseDelay: number = 0.1): number {
-  return baseDelay * index;
+/**
+ * Truncate a string to a specified length and add ellipsis
+ */
+export function truncateString(str: string, length: number): string {
+  if (str.length <= length) return str;
+  return str.slice(0, length) + '...';
 }
 
-// Simple email validation
-export function isValidEmail(email: string): boolean {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
+/**
+ * Get a random item from an array
+ */
+export function getRandomItem<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Detect if reduced motion is preferred
-export function prefersReducedMotion(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/**
+ * Delay execution for a specified time
+ */
+export function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Format percentage with + sign for positive values
-export function formatPercentage(value: number): string {
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value}%`;
-}
+/**
+ * Check if the code is running on the client side
+ */
+export const isClient = typeof window !== 'undefined';
 
-// Create an array of numbers from min to max
-export function range(min: number, max: number): number[] {
-  return Array.from({ length: max - min + 1 }, (_, i) => min + i);
-}
-
-// Check if element is in viewport
-export function isInViewport(element: HTMLElement): boolean {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.bottom >= 0 &&
-    rect.left <= (window.innerWidth || document.documentElement.clientWidth) &&
-    rect.right >= 0
-  );
-}
+/**
+ * Check if the code is running on the server side
+ */
+export const isServer = !isClient;

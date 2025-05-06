@@ -39,7 +39,7 @@ const SphereSection = lazy(() => import('@/components/sections/SphereSection'));
 const HeroSection = lazy(() => import('@/components/sections/HeroSection'));
 const StatsSection = lazy(() => import('@/components/sections/StatsSection'));
 const ProblemSection = lazy(() => import('@/components/sections/ProblemSection'));
-const SolutionScrollSection = lazy(() => import('@/components/sections/SolutionScrollSection'));
+const MultiStageScrollSection = lazy(() => import('@/components/sections/MultiStageScrollSection'));
 const SolutionSection = lazy(() => import('@/components/sections/SolutionSection'));
 const JourneySection = lazy(() => import('@/components/sections/JourneySection'));
 const ImpactSection = lazy(() => import('@/components/sections/ImpactSection'));
@@ -79,7 +79,7 @@ export default function Home() {
           
           <section className={sectionSizes.iphoneScroll}>
             <Suspense fallback={<SectionLoading height={sectionSizes.iphoneScroll} />}>
-              <SolutionScrollSection />
+              <MultiStageScrollSection />
             </Suspense>
           </section>
           

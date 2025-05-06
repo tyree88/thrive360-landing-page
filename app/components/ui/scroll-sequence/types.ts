@@ -1,9 +1,11 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export interface ScrollSequenceSection {
+  id: string;
   title: string;
   description?: string;
   bgColor: string;
+  textColor: string;
   content: ReactNode;
 }
 
@@ -12,4 +14,6 @@ export interface ThriveScrollSequenceProps {
   subtitle?: string;
   sections: ScrollSequenceSection[];
   className?: string;
+  showSideContainers?: boolean;
+  centerPhone?: boolean;
 }

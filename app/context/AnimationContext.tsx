@@ -1,18 +1,18 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import ScrollToPlugin from 'gsap/ScrollToPlugin';
-import Observer from 'gsap/Observer';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/Observer';
+import Lenis from '@studio-freight/lenis';
 
-// Register GSAP plugins once on the client side
+// Register GSAP plugins
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, Observer);
+  gsap.registerPlugin(ScrollTrigger, Observer);
 }
 
 type AnimationContextType = {
-  lenis: any | null;
+  lenis: Lenis | null;
   gsap: typeof gsap;
   ScrollTrigger: typeof ScrollTrigger;
   registerScrollTrigger: (callback: () => void) => void;
@@ -20,161 +20,154 @@ type AnimationContextType = {
   scrollTo: (target: string | HTMLElement | number, options?: any) => void;
 };
 
-const AnimationContext = createContext<AnimationContextType | null>(null);
+const defaultContext: AnimationContextType = {
+  lenis: null,
+  gsap: gsap,
+  ScrollTrigger: ScrollTrigger,
+  registerScrollTrigger: () => {},
+  refreshScrollTriggers: () => {},
+  scrollTo: () => {},
+};
 
-export const AnimationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [lenis, setLenis] = useState<any | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const requestRef = useRef<number | null>(null);
+const AnimationContext = createContext<AnimationContextType>(defaultContext);
+
+export const AnimationProvider = ({ children }: { children: ReactNode }) => {
+  const [lenis, setLenis] = useState<Lenis | null>(null);
+  const [scrollTriggerCallbacks, setScrollTriggerCallbacks] = useState<Array<() => void>>([]);
   
+  // Initialize Lenis for smooth scrolling
   useEffect(() => {
-    // Early return for SSR
     if (typeof window === 'undefined') return;
     
-    // Import Lenis dynamically to avoid SSR issues
-    const initLenis = async () => {
-      try {
-        const { default: Lenis } = await import('@studio-freight/lenis');
-        
-        const lenisInstance = new Lenis({
-          duration: 1.2,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          touchMultiplier: 2,
-          infinite: false,
-          orientation: 'vertical',
-          gestureOrientation: 'vertical',
-          smoothWheel: true,
-          wheelMultiplier: 1,
-          autoResize: true,
-        });
-        
-        // Connect GSAP to Lenis for synchronized animations
-        lenisInstance.on('scroll', () => {
-          ScrollTrigger.update();
-        });
-        
-        const updateScroll = (time: number) => {
-          lenisInstance.raf(time);
-          requestRef.current = requestAnimationFrame(updateScroll);
-        };
-        
-        requestRef.current = requestAnimationFrame(updateScroll);
-        setLenis(lenisInstance);
-        
-        // Optimize GSAP ticker
-        gsap.ticker.lagSmoothing(0);
-        
-        // Force recalculation of all ScrollTriggers
-        // Added delay to ensure DOM is fully rendered
-        setTimeout(() => {
-          ScrollTrigger.refresh(true);
-          setIsInitialized(true);
-        }, 200);
-      } catch (error) {
-        console.error('Error initializing Lenis:', error);
-      }
-    };
+    // Wait a bit for the DOM to be fully ready
+    const timeoutId = setTimeout(() => {
+      // Create Lenis instance with optimized settings
+      const lenisInstance = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Improved easing function
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
+        infinite: false,
+      });
+      
+      // Connect GSAP's ticker to Lenis
+      gsap.ticker.add((time) => {
+        lenisInstance.raf(time * 1000);
+      });
+      
+      // Override ScrollTrigger's scroll normalization to work with Lenis
+      ScrollTrigger.scrollerProxy(document.documentElement, {
+        scrollTop(value) {
+          if (arguments.length && value !== undefined) {
+            lenisInstance.scrollTo(value, { immediate: true });
+          }
+          return lenisInstance.scroll;
+        },
+        getBoundingClientRect() {
+          return {
+            top: 0,
+            left: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          };
+        },
+        pinType: 'transform',
+      });
+
+      // Update on scroll (debounced)
+      let timeout: ReturnType<typeof setTimeout>;
+      lenisInstance.on('scroll', debounce(() => {
+        ScrollTrigger.update();
+      }, 100));
+      
+      // Set the instance to state
+      setLenis(lenisInstance);
+      
+      // Initialize all registered ScrollTrigger callbacks
+      scrollTriggerCallbacks.forEach(callback => callback());
+      
+      // Refresh all ScrollTriggers after a delay to ensure everything is positioned correctly
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
+      
+      return () => {
+        gsap.ticker.remove(lenisInstance.raf);
+        lenisInstance.destroy();
+        clearTimeout(timeout);
+      };
+    }, 100);
     
-    initLenis();
-    
-    // Cleanup function
     return () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-        requestRef.current = null;
-      }
-      
-      if (lenis) {
-        lenis.destroy();
-      }
-      
-      // Kill all ScrollTrigger instances
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      clearTimeout(timeoutId);
     };
-  }, []);
+  }, [scrollTriggerCallbacks]);
   
   // Handle window resize to refresh ScrollTrigger
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const handleResize = () => {
-      // Debounce resize events to prevent excessive refreshes
-      if (isInitialized) {
-        ScrollTrigger.refresh(true);
-      }
-    };
+    const resizeObserver = new ResizeObserver(debounce(() => {
+      ScrollTrigger.refresh();
+    }, 200));
     
-    const debouncedHandleResize = debounce(handleResize, 250);
-    window.addEventListener('resize', debouncedHandleResize);
+    resizeObserver.observe(document.body);
     
     return () => {
-      window.removeEventListener('resize', debouncedHandleResize);
+      resizeObserver.disconnect();
     };
-  }, [isInitialized]);
+  }, []);
   
-  // Safe way to register ScrollTrigger instances
-  const registerScrollTrigger = (callback: () => void) => {
-    if (typeof window === 'undefined' || !isInitialized) return;
-    
-    // Wrap in try/catch to prevent errors from breaking the app
-    try {
-      callback();
-    } catch (error) {
-      console.error('Error registering ScrollTrigger:', error);
-    }
-  };
+  // Register a ScrollTrigger callback to be executed when Lenis is initialized
+  const registerScrollTrigger = useCallback((callback: () => void) => {
+    setScrollTriggerCallbacks(prev => [...prev, callback]);
+  }, []);
   
-  // Force refresh all ScrollTrigger instances
-  const refreshScrollTriggers = () => {
+  // Refresh all ScrollTriggers
+  const refreshScrollTriggers = useCallback(() => {
     if (typeof window === 'undefined') return;
-    ScrollTrigger.refresh(true);
-  };
+    ScrollTrigger.refresh();
+  }, []);
   
-  // Scroll to target function utilizing Lenis
-  const scrollTo = (target: string | HTMLElement | number, options: any = {}) => {
+  // Scroll to a target element or position
+  const scrollTo = useCallback((target: string | HTMLElement | number, options?: any) => {
     if (!lenis) return;
-    
-    lenis.scrollTo(target, {
-      offset: -100,
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      ...options,
-    });
+    lenis.scrollTo(target, options);
+  }, [lenis]);
+  
+  const value: AnimationContextType = {
+    lenis,
+    gsap,
+    ScrollTrigger,
+    registerScrollTrigger,
+    refreshScrollTriggers,
+    scrollTo,
   };
   
   return (
-    <AnimationContext.Provider 
-      value={{
-        lenis,
-        gsap,
-        ScrollTrigger,
-        registerScrollTrigger,
-        refreshScrollTriggers,
-        scrollTo
-      }}
-    >
+    <AnimationContext.Provider value={value}>
       {children}
     </AnimationContext.Provider>
   );
 };
 
-// Custom hook to use animation context
 export const useAnimation = () => {
-  const context = useContext(AnimationContext);
-  if (!context) {
-    throw new Error('useAnimation must be used within an AnimationProvider');
-  }
-  return context;
+  return useContext(AnimationContext);
 };
 
 // Utility function to debounce function calls
 function debounce(func: Function, wait: number) {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
+  
   return function executedFunction(...args: any[]) {
     const later = () => {
       clearTimeout(timeout);
       func(...args);
     };
+    
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };

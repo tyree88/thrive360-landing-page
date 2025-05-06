@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { useReducedMotion } from './use-reduced-motion';
 import { useAnimation } from '@/context/AnimationContext';
-import { useReducedMotion } from '@/hooks/use-reduced-motion';
 
 interface AnimationOptions {
   threshold?: number;
@@ -22,136 +22,134 @@ interface AnimationOptions {
  * and handles reduced motion preferences automatically
  */
 export function useOptimizedAnimations() {
-  const prefersReducedMotion = useReducedMotion();
   const { gsap, ScrollTrigger, registerScrollTrigger } = useAnimation();
-  
+  const prefersReducedMotion = useReducedMotion();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize the animations once GSAP is loaded
+  useEffect(() => {
+    if (gsap && ScrollTrigger && !isInitialized) {
+      setIsInitialized(true);
+    }
+  }, [gsap, ScrollTrigger, isInitialized]);
+
   /**
    * Create a fade-in animation for a section or component
    */
-  const createFadeIn = (
-    elementRef: React.RefObject<HTMLElement>,
+  const createFadeIn = useCallback((
+    elements: string | Element | Element[] | NodeList,
     options: AnimationOptions = {}
   ) => {
+    if (!gsap || !isInitialized) return;
+
     const {
       threshold = 0.2,
       stagger = 0.1,
       delay = 0,
-      duration = prefersReducedMotion ? 0.3 : 0.6,
+      duration = prefersReducedMotion ? 0.1 : 0.8,
       ease = 'power2.out',
       fromY = prefersReducedMotion ? 0 : 30,
       fromOpacity = 0,
       fromScale = prefersReducedMotion ? 1 : 0.95,
-      once = true,
+      once = true
     } = options;
-    
-    useEffect(() => {
-      if (!elementRef.current) return;
-      
-      registerScrollTrigger(() => {
-        const element = elementRef.current;
-        if (!element) return;
-        
-        const childElements = element.children;
-        if (childElements.length === 0) return;
-        
-        // Set initial state
-        gsap.set(childElements, {
-          y: fromY,
-          opacity: fromOpacity,
-          scale: fromScale,
-        });
-        
-        // Create the scroll trigger animation
-        const trigger = ScrollTrigger.create({
-          trigger: element,
-          start: `top ${(1 - threshold) * 100}%`,
-          once,
-          onEnter: () => {
-            gsap.to(childElements, {
-              y: 0,
-              opacity: 1,
-              scale: 1,
-              stagger,
-              duration,
-              delay,
-              ease,
-              clearProps: 'transform',
-              overwrite: 'auto',
-            });
-          },
-        });
-        
-        return () => {
-          trigger.kill();
-        };
-      });
-    }, [elementRef, threshold, stagger, delay, duration, ease, fromY, fromOpacity, fromScale, once]);
-  };
-  
+
+    // Create the animation timeline
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { duration, ease }
+    });
+
+    // Add the animation to the timeline
+    tl.from(elements, {
+      y: fromY,
+      opacity: fromOpacity,
+      scale: fromScale,
+      stagger: prefersReducedMotion ? 0 : stagger,
+      clearProps: 'transform', // Clean up transform properties after animation
+    });
+
+    // Return a function to play the animation
+    // This allows the animation to be triggered manually if needed
+    return {
+      play: () => tl.play(),
+      pause: () => tl.pause(),
+      timeline: tl
+    };
+  }, [gsap, isInitialized, prefersReducedMotion]);
+
   /**
    * Create a parallax effect for background elements
    */
-  const createParallax = (
-    elementRef: React.RefObject<HTMLElement>,
-    options: {
-      speed?: number;
-      direction?: 'up' | 'down' | 'left' | 'right';
-    } = {}
+  const createParallax = useCallback((
+    element: string | Element,
+    { speed = 0.5, start = 'top bottom', end = 'bottom top' } = {}
   ) => {
-    const { speed = prefersReducedMotion ? 0 : 0.2, direction = 'up' } = options;
-    
-    useEffect(() => {
-      if (!elementRef.current || prefersReducedMotion) return;
-      
-      registerScrollTrigger(() => {
-        const element = elementRef.current;
-        if (!element) return;
-        
-        // Determine movement based on direction
-        const yPercent = direction === 'up' ? speed * 100 : direction === 'down' ? -speed * 100 : 0;
-        const xPercent = direction === 'left' ? speed * 100 : direction === 'right' ? -speed * 100 : 0;
-        
-        // Create the animation
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: element,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-        
-        tl.fromTo(
-          element,
-          { y: 0, x: 0 },
-          { y: `${yPercent}%`, x: `${xPercent}%`, ease: 'none' }
-        );
-        
-        return () => {
-          tl.kill();
-          ScrollTrigger.getAll()
-            .filter((st) => st.vars.trigger === element)
-            .forEach((st) => st.kill());
-        };
+    if (!gsap || !ScrollTrigger || !isInitialized || prefersReducedMotion) return;
+
+    registerScrollTrigger(() => {
+      // Create a ScrollTrigger instance
+      const scrollTrigger = ScrollTrigger.create({
+        trigger: element,
+        start,
+        end,
+        scrub: true,
+        onUpdate: (self: any) => {
+          // Apply transform directly using style for better performance
+          if (element instanceof Element) {
+            (element as HTMLElement).style.transform = `translateY(${self.progress * speed * 100}px)`;
+          } else if (typeof element === 'string') {
+            document.querySelectorAll(element).forEach(el => {
+              (el as HTMLElement).style.transform = `translateY(${self.progress * speed * 100}px)`;
+            });
+          }
+        }
       });
-    }, [elementRef, speed, direction, prefersReducedMotion]);
-  };
-  
+
+      return scrollTrigger;
+    });
+  }, [gsap, ScrollTrigger, isInitialized, prefersReducedMotion, registerScrollTrigger]);
+
   /**
    * Create a smooth scroll-to action
    */
-  const scrollToSection = (target: string | HTMLElement, offset: number = -100) => {
-    const { scrollTo } = useAnimation();
-    
-    scrollTo(target, {
-      offset,
-      duration: prefersReducedMotion ? 0.3 : 1.2,
+  const scrollTo = useCallback((
+    target: string | Element | number,
+    { duration = 1, offset = 0 } = {}
+  ) => {
+    if (!gsap || !isInitialized) return;
+
+    // If reduced motion is preferred, use a shorter duration
+    const actualDuration = prefersReducedMotion ? 0.1 : duration;
+
+    // Get the target position
+    let position: number;
+    if (typeof target === 'number') {
+      position = target;
+    } else if (typeof target === 'string') {
+      const element = document.querySelector(target);
+      if (!element) return;
+      position = element.getBoundingClientRect().top + window.pageYOffset + offset;
+    } else {
+      position = target.getBoundingClientRect().top + window.pageYOffset + offset;
+    }
+
+    // Animate the scroll
+    gsap.to(window, {
+      scrollTo: {
+        y: position,
+        autoKill: true,
+      },
+      duration: actualDuration,
+      ease: 'power2.inOut',
     });
-  };
-  
+  }, [gsap, isInitialized, prefersReducedMotion]);
+
   return {
     createFadeIn,
     createParallax,
-    scrollToSection,
+    scrollTo,
+    prefersReducedMotion,
+    isInitialized
   };
 }

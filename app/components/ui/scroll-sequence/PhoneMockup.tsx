@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ScrollSequenceSection } from './types';
 
@@ -6,96 +8,102 @@ interface PhoneMockupProps {
   phoneRef: React.RefObject<HTMLDivElement>;
   contentContainerRef: React.RefObject<HTMLDivElement>;
   sectionRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
+  sectionContentRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
+  sectionTitleRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
+  sectionDescRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
-const PhoneMockup: React.FC<PhoneMockupProps> = ({
+/**
+ * PhoneMockup - A responsive phone mockup component used in scroll sequences
+ * 
+ * This component displays a phone frame with content that changes as the user scrolls.
+ * It uses refs to allow external animation control from the parent component.
+ */
+const PhoneMockup = ({
   sections,
   phoneRef,
   contentContainerRef,
   sectionRefs,
-}) => {
+  sectionContentRefs,
+  sectionTitleRefs,
+  sectionDescRefs
+}: PhoneMockupProps) => {
   return (
     <div 
       ref={phoneRef}
-      className="relative flex-shrink-0 w-[280px] md:w-[320px] h-[580px] md:h-[640px] mx-auto z-10"
+      className="relative w-[300px] md:w-[320px] h-[600px] md:h-[640px] bg-zinc-800 rounded-[36px] overflow-hidden shadow-2xl"
+      aria-hidden="true" // Hidden from screen readers as it's decorative
     >
-      {/* Phone frame */}
-      <div 
-        className="absolute inset-0 bg-gray-900 rounded-[36px] shadow-xl overflow-hidden"
-        style={{
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
-        }}
-      >
-        {/* Phone frame details */}
-        <div className="absolute top-0 left-0 right-0 h-6 flex items-center justify-center">
-          <div className="w-20 h-4 bg-black rounded-b-xl"></div>
-        </div>
-        
-        {/* Side buttons */}
-        <div className="absolute top-24 right-0 w-[3px] h-10 bg-gray-700 rounded-l-sm"></div>
-        <div className="absolute top-16 left-0 w-[3px] h-8 bg-gray-700 rounded-r-sm"></div>
-        <div className="absolute top-28 left-0 w-[3px] h-12 bg-gray-700 rounded-r-sm"></div>
-        
-        {/* Screen container */}
+      {/* Phone notch */}
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-7 bg-black rounded-b-xl z-50" />
+      
+      {/* Button outlines */}
+      <div className="absolute top-1/4 right-0 w-1.5 h-12 bg-zinc-700 rounded-l-md" /> {/* Power button */}
+      <div className="absolute top-1/3 left-0 w-1.5 h-8 bg-zinc-700 rounded-r-md" /> {/* Volume up */}
+      <div className="absolute top-[45%] left-0 w-1.5 h-8 bg-zinc-700 rounded-r-md" /> {/* Volume down */}
+      
+      {/* Inner screen with border */}
+      <div className="absolute top-1 right-1 bottom-1 left-1 bg-black rounded-[32px] overflow-hidden">
+        {/* Content container */}
         <div 
           ref={contentContainerRef}
-          className="absolute inset-[8px] rounded-[28px] bg-white dark:bg-gray-800 overflow-hidden"
+          className="relative w-full h-full overflow-hidden"
         >
-          {/* Status bar */}
-          <div className="absolute top-0 left-0 right-0 h-6 bg-gray-100 dark:bg-gray-700 z-10 flex items-center px-4 justify-between">
-            <div className="text-xs font-medium text-gray-800 dark:text-gray-200">10:30</div>
-            <div className="flex space-x-1">
-              <div className="w-3 h-3 rounded-full bg-gray-800 dark:bg-gray-200 opacity-70"></div>
-              <div className="w-3 h-3 rounded-full bg-gray-800 dark:bg-gray-200 opacity-80"></div>
-              <div className="w-3 h-3 rounded-full bg-gray-800 dark:bg-gray-200 opacity-90"></div>
-            </div>
-          </div>
-          
-          {/* App content area */}
-          <div className="absolute inset-0 pt-6 overflow-hidden">
-            {/* App header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">T</div>
-                  <span className="ml-2 font-semibold text-gray-900 dark:text-white">Thrive360</span>
-                </div>
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
-                  <div className="w-4 h-0.5 bg-gray-500 dark:bg-gray-300 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Screen reflection overlay */}
-            <div 
-              className="absolute inset-0 pointer-events-none z-20 opacity-15" 
-              style={{ 
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 80%)',
-                borderRadius: "inherit" 
+          {/* Each section of content */}
+          {sections.map((section, index) => (
+            <div
+              key={section.id}
+              ref={el => {
+                if (sectionRefs && sectionRefs.current) {
+                  sectionRefs.current[index] = el;
+                }
               }}
-              aria-hidden="true"
-            ></div>
-            
-            {sections.map((section, index) => (
+              className="absolute inset-0 flex flex-col opacity-0"
+              style={{ backgroundColor: section.bgColor }}
+            >
+              {/* Section title */}
               <div 
-                key={index}
-                ref={(el) => {
-                  if (sectionRefs && sectionRefs.current) {
-                    sectionRefs.current[index] = el;
+                ref={el => {
+                  if (sectionTitleRefs && sectionTitleRefs.current) {
+                    sectionTitleRefs.current[index] = el;
                   }
                 }}
-                className="absolute inset-0 flex flex-col items-center p-8 opacity-0"
+                className="px-4 pt-12 pb-3"
               >
-                <h3 className="text-2xl font-semibold mb-3 text-center">{section.title}</h3>
+                <h3 
+                  className="text-lg font-bold" 
+                  style={{ color: section.textColor }}
+                >
+                  {section.title}
+                </h3>
                 {section.description && (
-                  <p className="text-sm mb-4 text-center text-gray-600">{section.description}</p>
+                  <p 
+                    ref={el => {
+                      if (sectionDescRefs && sectionDescRefs.current) {
+                        sectionDescRefs.current[index] = el;
+                      }
+                    }}
+                    className="text-xs mt-1" 
+                    style={{ color: section.textColor }}
+                  >
+                    {section.description}
+                  </p>
                 )}
-                <div className="flex-grow w-full flex items-center justify-center">
-                  {section.content}
-                </div>
               </div>
-            ))}
-          </div>
+              
+              {/* Content area */}
+              <div 
+                ref={el => {
+                  if (sectionContentRefs && sectionContentRefs.current) {
+                    sectionContentRefs.current[index] = el;
+                  }
+                }}
+                className="flex-1 overflow-hidden px-3 pb-6"
+              >
+                {section.content}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

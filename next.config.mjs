@@ -47,13 +47,9 @@ const nextConfig = {
     ];
   },
 
-  // Add experimental configuration for allowedDevOrigins
+  // Experimental features
   experimental: {
-    allowedDevOrigins: [
-      'https://e9ecc91a-0280-4d8d-8323-9f2baa499106-00-38mfb1g5qryxo.riker.replit.dev',
-      // Allow any Replit domain for development
-      /.*\.replit\.dev$/,
-    ],
+    // Empty for now
   },
 
   // Add support for MDX content if needed

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MultiStageScrollSection } from './MultiStageScrollSection';
+import MultiStageScrollSection from './MultiStageScrollSection';
 
 // SVG Illustrations for each stage
 const PersonalizedAssessmentIllustration = () => (
