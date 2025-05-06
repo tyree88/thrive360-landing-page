@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -13,16 +11,8 @@ export const ContainerScroll = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollYProgress, setScrollYProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Handle initial client-side mounting
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
-    
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -31,45 +21,36 @@ export const ContainerScroll = ({
     return () => {
       window.removeEventListener("resize", checkMobile);
     };
-  }, [isMounted]);
+  }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
-    
     const handleScroll = () => {
       if (!containerRef.current) return;
       
-      try {
-        const container = containerRef.current;
-        const { top, height } = container.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        
-        // Calculate scroll progress (0 to 1)
-        let progress = (windowHeight - top) / (windowHeight + height);
-        progress = Math.min(Math.max(progress, 0), 1); // Clamp between 0 and 1
-        
-        setScrollYProgress(progress);
-      } catch (error) {
-        console.error("Error calculating scroll progress:", error);
-      }
+      const container = containerRef.current;
+      const { top, height } = container.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate scroll progress (0 to 1)
+      let progress = (windowHeight - top) / (windowHeight + height);
+      progress = Math.min(Math.max(progress, 0), 1); // Clamp between 0 and 1
+      
+      setScrollYProgress(progress);
     };
     
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initialize
     
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMounted]);
+  }, []);
 
   const scaleDimensions = () => {
     return isMobile ? [0.7, 0.9] : [1.05, 1];
   };
 
-  // Safe calculations that handle SSR
-  const rotate = isMounted ? scrollYProgress * -20 + 20 : 0; // 20 to 0
-  const scale = isMounted ? 
-    scrollYProgress * (scaleDimensions()[1] - scaleDimensions()[0]) + scaleDimensions()[0] : 
-    scaleDimensions()[0]; // 0.7/1.05 to 0.9/1
-  const translate = isMounted ? scrollYProgress * -100 : 0; // 0 to -100
+  const rotate = scrollYProgress * -20 + 20; // 20 to 0
+  const scale = scrollYProgress * (scaleDimensions()[1] - scaleDimensions()[0]) + scaleDimensions()[0]; // 0.7/1.05 to 0.9/1
+  const translate = scrollYProgress * -100; // 0 to -100
 
   return (
     <div

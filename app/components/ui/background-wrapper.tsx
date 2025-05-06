@@ -50,20 +50,16 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
       {/* Background patterns - completely disabled during SSR */}
       {showPatterns && (
         <SSRDisabled>
-          {/* Using spans for better hydration compatibility */}
-          <span className="absolute top-10 left-10 w-40 h-40 bg-thrive-purple-100/20 rounded-full blur-3xl block" />
-          <span className="absolute bottom-20 right-10 w-60 h-60 bg-thrive-blue-100/20 rounded-full blur-3xl block" />
+          <div className="absolute top-10 left-10 w-40 h-40 bg-thrive-purple-100/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-60 h-60 bg-thrive-blue-100/20 rounded-full blur-3xl" />
         </SSRDisabled>
       )}
       
-      {/* Main content */}
-      {children}
-      
-      {/* Top transition gradient - added dynamically client-side */}
+      {/* Top transition gradient - completely disabled during SSR */}
       {showTransitionTop && (
         <SSRDisabled>
-          <span 
-            className="absolute top-0 left-0 right-0 h-24 z-10 pointer-events-none block" 
+          <div 
+            className="absolute top-0 left-0 right-0 h-24 z-10 pointer-events-none" 
             style={{
               background: `linear-gradient(to bottom, 
                 rgba(255, 255, 255, 1) 0%, 
@@ -74,11 +70,14 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
         </SSRDisabled>
       )}
       
-      {/* Bottom transition gradient - added dynamically client-side */}
+      {/* Main content */}
+      {children}
+      
+      {/* Bottom transition gradient - completely disabled during SSR */}
       {showTransitionBottom && (
         <SSRDisabled>
-          <span 
-            className="absolute bottom-0 left-0 right-0 h-24 z-10 pointer-events-none block" 
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-24 z-10 pointer-events-none" 
             style={{
               background: `linear-gradient(to top, 
                 rgba(255, 255, 255, 1) 0%, 
