@@ -21,6 +21,7 @@ const sectionSizes = {
   hero: 'min-h-screen',
   stats: 'min-h-[50vh]',
   problem: 'min-h-[80vh]',
+  iphoneScroll: 'min-h-screen',
   solution: 'min-h-[70vh]',
   journey: 'min-h-[90vh]',
   impact: 'min-h-[70vh]',
@@ -38,6 +39,7 @@ const SphereSection = lazy(() => import('@/components/sections/SphereSection'));
 const HeroSection = lazy(() => import('@/components/sections/HeroSection'));
 const StatsSection = lazy(() => import('@/components/sections/StatsSection'));
 const ProblemSection = lazy(() => import('@/components/sections/ProblemSection'));
+const SolutionScrollSection = lazy(() => import('@/components/sections/SolutionScrollSection'));
 const SolutionSection = lazy(() => import('@/components/sections/SolutionSection'));
 const JourneySection = lazy(() => import('@/components/sections/JourneySection'));
 const ImpactSection = lazy(() => import('@/components/sections/ImpactSection'));
@@ -72,6 +74,12 @@ export default function Home() {
           <section className={sectionSizes.problem}>
             <Suspense fallback={<SectionLoading height={sectionSizes.problem} />}>
               <ProblemSection />
+            </Suspense>
+          </section>
+          
+          <section className={sectionSizes.iphoneScroll}>
+            <Suspense fallback={<SectionLoading height={sectionSizes.iphoneScroll} />}>
+              <SolutionScrollSection />
             </Suspense>
           </section>
           

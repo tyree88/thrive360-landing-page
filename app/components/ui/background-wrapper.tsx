@@ -1,58 +1,40 @@
+'use client';
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface BackgroundWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+interface BackgroundWrapperProps {
+  id?: string;
+  variant?: 'light' | 'dark' | 'primary' | 'secondary' | 'gradient';
   className?: string;
-  variant?: 'default' | 'hero' | 'light' | 'dark';
-  showPatterns?: boolean;
-  showTransitionTop?: boolean;
-  showTransitionBottom?: boolean;
+  children: React.ReactNode;
 }
 
-const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
-  children,
+const BackgroundWrapper = ({
+  id,
+  variant = 'light',
   className,
-  variant = 'default',
-  showPatterns = true,
-  showTransitionTop = false,
-  showTransitionBottom = false,
-  ...props
-}) => {
-  // Determine background gradient based on variant
-  const bgClasses = {
-    default: 'bg-transparent',
-    hero: 'text-white',
-    light: 'bg-transparent',
-    dark: 'text-white',
-  }[variant];
-
+  children
+}: BackgroundWrapperProps) => {
+  const variantStyles = {
+    light: 'bg-white text-gray-900 dark:bg-gray-950 dark:text-white',
+    dark: 'bg-gray-900 text-white dark:bg-black',
+    primary: 'bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-50',
+    secondary: 'bg-purple-50 text-purple-900 dark:bg-purple-950 dark:text-purple-50',
+    gradient: 'bg-gradient-to-b from-white to-blue-50 text-gray-900 dark:from-gray-950 dark:to-blue-950 dark:text-gray-100'
+  };
+  
   return (
-    <div 
+    <section 
+      id={id}
       className={cn(
-        'relative min-h-screen w-full overflow-hidden',
-        bgClasses,
+        'relative w-full overflow-hidden',
+        variantStyles[variant],
         className
       )}
-      {...props}
     >
-      {/* Subtle pattern overlays for texture and depth */}
-      {showPatterns && (
-        <>
-          <div className="absolute inset-0 opacity-0 z-0" />
-          <div className="absolute inset-0 opacity-0 z-0" />
-        </>
-      )}
-      
-      {/* Top transition gradient */}
-      {showTransitionTop && <div className="section-transition-top" />}
-      
-      {/* Content container */}
-      <div className="relative z-10">{children}</div>
-      
-      {/* Bottom transition gradient */}
-      {showTransitionBottom && <div className="section-transition-bottom" />}
-    </div>
+      {children}
+    </section>
   );
 };
 
