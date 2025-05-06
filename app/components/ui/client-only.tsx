@@ -42,7 +42,7 @@ export default function ClientOnly({
   
   // Apply transition if requested
   if (withTransition && !hasTransitioned) {
-    return <div style={{ opacity: 0 }}>{children}</div>
+    return <span style={{ opacity: 0 }}>{children}</span>
   }
   
   // Normal client-side render
@@ -54,5 +54,5 @@ export default function ClientOnly({
  * Use this for purely decorative elements that might cause hydration issues
  */
 export function SSRDisabled({ children }: { children: ReactNode }) {
-  return <ClientOnly withTransition>{children}</ClientOnly>
+  return <ClientOnly fallback={null} withTransition={false}>{children}</ClientOnly>
 }

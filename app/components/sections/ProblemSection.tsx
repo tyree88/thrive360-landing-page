@@ -14,55 +14,74 @@ const ProblemSection: React.FC = () => {
   const statsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Use the enhanced scroll animation hook
+  // Use the enhanced scroll animation hook with safety checks
   useScrollTriggerAnimation(() => {
-    if (!sectionRef.current || !statsRef.current || !containerRef.current) return;
-
-    // Create main scroll trigger for pinning
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "50% 50%",
-      end: "+=400%",
-      pin: true,
-      pinSpacing: true,
-    });
-
-    // Animate each stat card
-    const stats = gsap.utils.toArray('.problem-stat');
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: statsRef.current,
-        start: "top center",
-        end: "+=300%",
-        scrub: 1,
-        snap: {
-          snapTo: 1 / (stats.length - 1),
-          duration: { min: 0.2, max: 0.5 },
-          delay: 0,
-        },
-      }
-    });
-
-    // Initial state for all stats
-    gsap.set(stats, { autoAlpha: 0, scale: 0.8 });
-
-    // Optimize animation performance
-    gsap.set(stats, { willChange: "transform, opacity" });
-
-    // Animate each stat sequentially with optimized properties
-    stats.forEach((stat, index) => {
-      tl.to(stat as HTMLElement, {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.5,
-        force3D: true,
-      })
-      .to(stat as HTMLElement, {
-        autoAlpha: index === stats.length - 1 ? 1 : 0.3,
-        scale: index === stats.length - 1 ? 1 : 0.9,
-        force3D: true,
-      }, ">");
-    });
+    // Make sure we're in a browser environment and all elements exist
+    if (typeof window === 'undefined' || 
+        !sectionRef.current || 
+        !statsRef.current || 
+        !containerRef.current) return;
+    
+    try {
+      // Create main scroll trigger for pinning
+      const mainTrigger = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "50% 50%",
+        end: "+=400%",
+        pin: true,
+        pinSpacing: true,
+      });
+  
+      // Find stat cards safely
+      const stats = gsap.utils.toArray('.problem-stat');
+      if (!stats.length) return;
+      
+      // Create timeline for stats animation
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: statsRef.current,
+          start: "top center",
+          end: "+=300%",
+          scrub: 1,
+          snap: {
+            snapTo: 1 / (stats.length - 1),
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0,
+          },
+        }
+      });
+  
+      // Set initial state for all stats (only if they exist)
+      gsap.set(stats, { 
+        autoAlpha: 0, 
+        scale: 0.8,
+        willChange: "transform, opacity" // Optimize performance
+      });
+  
+      // Animate each stat sequentially with optimized properties
+      stats.forEach((stat, index) => {
+        if (!stat) return;
+        tl.to(stat as HTMLElement, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 0.5,
+          force3D: true,
+        })
+        .to(stat as HTMLElement, {
+          autoAlpha: index === stats.length - 1 ? 1 : 0.3,
+          scale: index === stats.length - 1 ? 1 : 0.9,
+          force3D: true,
+        }, ">");
+      });
+      
+      // Cleanup function to kill animations when component unmounts
+      return () => {
+        mainTrigger.kill();
+        tl.kill();
+      };
+    } catch (error) {
+      console.error("ProblemSection animation error:", error);
+    }
   }, []);
 
   return (
