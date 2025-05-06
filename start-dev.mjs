@@ -1,52 +1,37 @@
-// Script to start both the Next.js app and a proxy server
-import { spawn } from 'child_process';
-import http from 'http';
-import httpProxy from 'http-proxy';
+/**
+ * Replit startup script to run Next.js with port forwarding
+ * This script will enable the workflow to access the application through port 5000
+ */
 
-// Start Next.js on port 3000
-console.log('Starting Next.js development server on port 3000...');
-const nextProcess = spawn('npm', ['run', 'dev'], {
+import { spawn } from 'child_process';
+
+// Start our combined server-esm.js script
+console.log('Starting Thrive360 application with port forwarding...');
+
+const serverProcess = spawn('node', ['server-esm.js'], {
   stdio: 'inherit',
   shell: true
 });
 
-// Give Next.js a moment to start
-setTimeout(() => {
-  // Create a proxy server to forward port 5000 to 3000
-  console.log('Starting proxy server on port 5000 -> 3000...');
-  const proxy = httpProxy.createProxyServer({});
+serverProcess.on('error', (err) => {
+  console.error('Failed to start server process:', err);
+  process.exit(1);
+});
 
-  // Create an HTTP server that uses the proxy
-  const server = http.createServer((req, res) => {
-    proxy.web(req, res, { target: 'http://localhost:3000' });
-  });
-
-  // Handle proxy errors
-  proxy.on('error', (err, req, res) => {
-    console.error('Proxy error:', err);
-    if (res.writeHead) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Proxy error: ' + err.message);
-    }
-  });
-
-  // Handle WebSocket connections
-  server.on('upgrade', (req, socket, head) => {
-    proxy.ws(req, socket, head, { target: 'http://localhost:3000' });
-  });
-
-  // Start the proxy server
-  server.listen(5000, () => {
-    console.log('Proxy server running on port 5000, forwarding to port 3000');
-    console.log('Navigate to http://localhost:5000 to view the app');
-  });
-}, 3000); // Wait 3 seconds for Next.js to start
-
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-  console.log('Shutting down servers...');
-  if (nextProcess) {
-    nextProcess.kill();
+serverProcess.on('exit', (code, signal) => {
+  if (code !== 0) {
+    console.error(`Server process exited with code ${code} and signal ${signal}`);
+    process.exit(code || 1);
   }
-  process.exit(0);
+});
+
+// Handle termination signals
+process.on('SIGINT', () => {
+  console.log('Shutting down server...');
+  serverProcess.kill('SIGINT');
+});
+
+process.on('SIGTERM', () => {
+  console.log('Shutting down server...');
+  serverProcess.kill('SIGTERM');
 });
