@@ -40,42 +40,60 @@ export const useFadeIn = (
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    // Only run this effect on the client side
+    if (typeof window === 'undefined' || !ref.current) return;
 
     const elements = ref.current.querySelectorAll(selector);
     if (elements.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        elements,
-        { 
-          y, 
-          x, 
-          scale, 
-          opacity, 
-          autoAlpha: opacity
-        },
-        { 
-          y: 0, 
-          x: 0, 
-          scale: 1, 
-          opacity: 1, 
-          autoAlpha: 1,
-          duration, 
-          delay, 
-          stagger, 
-          ease, 
-          scrollTrigger: {
-            trigger: ref.current,
-            start,
-            once,
-          },
-          onComplete
-        }
-      );
-    }, ref);
+    // Apply initial styles to prevent hydration mismatch
+    elements.forEach((element) => {
+      if (element instanceof HTMLElement) {
+        // Set initial transform to "none" to match server render
+        element.style.transform = 'none';
+        // Don't set opacity to 0 immediately to prevent flicker
+        // We'll handle this in the animation after a slight delay
+      }
+    });
 
-    return () => ctx.revert();
+    // Small delay to ensure client hydration is complete
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          elements,
+          { 
+            y, 
+            x, 
+            scale, 
+            opacity, 
+            autoAlpha: opacity
+          },
+          { 
+            y: 0, 
+            x: 0, 
+            scale: 1, 
+            opacity: 1, 
+            autoAlpha: 1,
+            duration, 
+            delay, 
+            stagger, 
+            ease, 
+            scrollTrigger: {
+              trigger: ref.current,
+              start,
+              once,
+            },
+            onComplete
+          }
+        );
+      }, ref);
+      
+      return () => ctx.revert();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [selector, y, x, scale, delay, duration, stagger, once, start, opacity, ease, onComplete]);
 
   return ref;
@@ -102,27 +120,43 @@ export const useParallax = (
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    // Only run this effect on the client side
+    if (typeof window === 'undefined' || !ref.current) return;
 
     const elements = ref.current.querySelectorAll(selector);
     if (elements.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      elements.forEach((element) => {
-        gsap.to(element, {
-          y: `${speed}%`,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: ref.current,
-            start,
-            end,
-            scrub,
-          },
-        });
-      });
-    }, ref);
+    // Apply initial styles to prevent hydration mismatch
+    elements.forEach((element) => {
+      // Set initial transform to "none" to match server render
+      if (element instanceof HTMLElement) {
+        element.style.transform = 'none';
+      }
+    });
 
-    return () => ctx.revert();
+    // Small delay to ensure initial styles are applied before animation
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        elements.forEach((element) => {
+          gsap.to(element, {
+            y: `${speed}%`,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: ref.current,
+              start,
+              end,
+              scrub,
+            },
+          });
+        });
+      }, ref);
+      
+      return () => ctx.revert();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [selector, speed, start, end, scrub]);
 
   return ref;
@@ -153,32 +187,48 @@ export const useSequence = (
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    // Only run this effect on the client side
+    if (typeof window === 'undefined' || !ref.current) return;
 
     const elements = ref.current.querySelectorAll(selector);
     if (elements.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        elements,
-        { opacity: 0, y: 20 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration, 
-          ease,
-          delay,
-          stagger: staggerDelay,
-          scrollTrigger: {
-            trigger: ref.current,
-            start,
-            once,
-          },
-        }
-      );
-    }, ref);
+    // Apply initial styles to prevent hydration mismatch
+    elements.forEach((element) => {
+      if (element instanceof HTMLElement) {
+        // Set initial transform to "none" to match server render
+        element.style.transform = 'none';
+      }
+    });
 
-    return () => ctx.revert();
+    // Small delay to ensure client hydration is complete
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          elements,
+          { opacity: 0, y: 20 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration, 
+            ease,
+            delay,
+            stagger: staggerDelay,
+            scrollTrigger: {
+              trigger: ref.current,
+              start,
+              once,
+            },
+          }
+        );
+      }, ref);
+      
+      return () => ctx.revert();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [selector, delay, duration, ease, staggerDelay, start, once]);
 
   return ref;

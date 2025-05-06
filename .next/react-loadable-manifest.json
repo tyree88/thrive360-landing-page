@@ -1,16 +1,1 @@
-{
-  "app/animation-scripts.tsx -> gsap": {
-    "id": "app/animation-scripts.tsx -> gsap",
-    "files": []
-  },
-  "app/animation-scripts.tsx -> gsap/ScrollToPlugin": {
-    "id": "app/animation-scripts.tsx -> gsap/ScrollToPlugin",
-    "files": [
-      "static/chunks/_app-pages-browser_node_modules_gsap_ScrollToPlugin_js.js"
-    ]
-  },
-  "app/animation-scripts.tsx -> gsap/ScrollTrigger": {
-    "id": "app/animation-scripts.tsx -> gsap/ScrollTrigger",
-    "files": []
-  }
-}
+{}
