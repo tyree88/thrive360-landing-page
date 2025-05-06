@@ -5,15 +5,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly set the server to listen on port 3000
-  httpAgentOptions: {
-    keepAlive: true,
-  },
-  serverRuntimeConfig: {
-    port: 3000,
-  },
-  serverExternalPackages: [],
-  experimental: {  },
   // Enable React strict mode for better development experience
   reactStrictMode: true,
   

@@ -20,7 +20,6 @@ const Navbar = dynamic(() => import('@/components/ui/Navbar'), { ssr: true });
 const HeroSection = dynamic(() => import('@/components/sections/HeroSection'));
 const ProblemSection = dynamic(() => import('@/components/sections/ProblemSection'));
 const SolutionSection = dynamic(() => import('@/components/sections/SolutionSection'));
-const SolutionIpadSection = dynamic(() => import('@/components/sections/SolutionIpadSection'));
 const JourneySection = dynamic(() => import('@/components/sections/JourneySection'));
 const ImpactSection = dynamic(() => import('@/components/sections/ImpactSection'));
 const CaseStudiesSection = dynamic(() => import('@/components/sections/CaseStudiesSection'));
@@ -43,7 +42,6 @@ export default function Home() {
           <HeroSection />
           <ProblemSection />
           <SolutionSection />
-          <SolutionIpadSection />
           <JourneySection />
           <ImpactSection />
           <CaseStudiesSection />

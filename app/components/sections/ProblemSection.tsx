@@ -2,161 +2,119 @@
 
 import React, { useRef } from 'react';
 import { PROBLEM_STATS, ROUTES } from '@/lib/constants';
+import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { useScrollTriggerAnimation } from '@/hooks/use-scroll-animation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faUsers, faChartLine } from '@fortawesome/free-solid-svg-icons';
-import AnimatedButton from '@/components/ui/animated-button';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 const ProblemSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const subheadingRef = useRef<HTMLParagraphElement>(null);
-  const statsContainerRef = useRef<HTMLDivElement>(null);
-  const conclusionRef = useRef<HTMLDivElement>(null);
-  
-  // Get the icon for a statistic
-  const getIconForStat = (iconName: string) => {
-    switch(iconName) {
-      case 'fa-brain': return faBrain;
-      case 'fa-users': return faUsers;
-      case 'fa-chart-line': return faChartLine;
-      default: return faBrain;
-    }
-  };
+  const statsRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // GSAP ScrollTrigger setup
+  // Use the enhanced scroll animation hook
   useScrollTriggerAnimation(() => {
-    if (!sectionRef.current || !headingRef.current || !subheadingRef.current) return;
-    
-    // Heading and subheading animations
-    gsap.fromTo(headingRef.current,
-      { opacity: 0, y: 30 }, 
-      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: headingRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
-        }
+    if (!sectionRef.current || !statsRef.current || !containerRef.current) return;
+
+    // Create main scroll trigger for pinning
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "50% 50%",
+      end: "+=400%",
+      pin: true,
+      pinSpacing: true,
+    });
+
+    // Animate each stat card
+    const stats = gsap.utils.toArray('.problem-stat');
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: statsRef.current,
+        start: "top center",
+        end: "+=300%",
+        scrub: 1,
+        snap: {
+          snapTo: 1 / (stats.length - 1),
+          duration: { min: 0.2, max: 0.5 },
+          delay: 0,
+        },
       }
-    );
-    
-    gsap.fromTo(subheadingRef.current,
-      { opacity: 0, y: 20 }, 
-      { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: subheadingRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
-        }
-      }
-    );
-    
-    // Stats animations
-    if (statsContainerRef.current) {
-      const stats = gsap.utils.toArray('.problem-stat');
-      
-      stats.forEach((stat, index) => {
-        if (stat) {
-          gsap.fromTo(stat as HTMLElement,
-            { opacity: 0, y: 50 },
-            { opacity: 1, y: 0, duration: 0.6, delay: index * 0.2,
-              scrollTrigger: {
-                trigger: stat as HTMLElement,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse'
-              }
-            }
-          );
-        }
-      });
-    }
-    
-    // Conclusion animation
-    if (conclusionRef.current) {
-      gsap.fromTo(conclusionRef.current,
-        { opacity: 0, y: 30 }, 
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: conclusionRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-    }
+    });
+
+    // Initial state for all stats
+    gsap.set(stats, { autoAlpha: 0, scale: 0.8 });
+
+    // Optimize animation performance
+    gsap.set(stats, { willChange: "transform, opacity" });
+
+    // Animate each stat sequentially with optimized properties
+    stats.forEach((stat, index) => {
+      tl.to(stat as HTMLElement, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.5,
+        force3D: true,
+      })
+      .to(stat as HTMLElement, {
+        autoAlpha: index === stats.length - 1 ? 1 : 0.3,
+        scale: index === stats.length - 1 ? 1 : 0.9,
+        force3D: true,
+      }, ">");
+    });
   }, []);
 
   return (
     <BackgroundWrapper
       id="problem"
       variant="light"
-      className="section py-20"
+      className="section"
       showTransitionTop={true}
       showTransitionBottom={true}
     >
-      <div ref={sectionRef} className="max-w-7xl mx-auto px-6 w-full">
-        <div className="text-center mb-16">
-          <span className="inline-block px-3 py-1 text-sm font-medium bg-thrive-purple-100 text-thrive-purple-700 rounded-full mb-4">
-            The Challenge
-          </span>
-          <h2 
-            ref={headingRef}
-            className="text-3xl md:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Mental Health Care is Broken
-          </h2>
-          <p 
-            ref={subheadingRef}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
-          >
-            Traditional solutions fail to engage employees, waste resources, and don't deliver measurable results.
-          </p>
-        </div>
-        
-        <div 
-          ref={statsContainerRef}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+      <div ref={sectionRef} className="min-h-screen">
+        <div ref={containerRef} className="h-full">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <span className="inline-block px-4 py-1.5 text-sm font-medium bg-[#988AD5]/10 text-[#6D3CA7] rounded-full mb-6">
+                The Challenge
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+                Mental Health Care is Broken
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Traditional solutions fail to meet modern needs, leaving critical gaps in care.
+              </p>
+            </>
+          }
         >
-          {PROBLEM_STATS.map((stat, index) => (
-            <div
-              key={stat.id}
-              className="problem-stat bg-white rounded-xl shadow-lg p-8 transform transition-all duration-500 ease-out hover:scale-105"
-            >
-              <div 
-                className="flex items-center justify-center h-20 w-20 rounded-full mx-auto mb-6"
-                style={{ backgroundColor: `${stat.color}20` }}
-              >
-                <FontAwesomeIcon 
-                  icon={getIconForStat(stat.icon)} 
-                  className="text-3xl"
-                  style={{ color: stat.color }} 
-                />
-              </div>
-              <h3 className="text-4xl font-bold text-center mb-2 text-gray-800">
-                {stat.percentage}
-              </h3>
-              <p className="text-center text-gray-600">{stat.description}</p>
+          <div ref={statsRef} className="max-w-6xl mx-auto px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {PROBLEM_STATS.map((stat, index) => (
+                <div
+                  key={index}
+                  className="problem-stat p-6 flex flex-col items-center justify-center text-center bg-white rounded-xl shadow-lg border border-gray-100"
+                >
+                  <div 
+                    className="mb-3 w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `rgba(109,60,167,0.08)` }}
+                  >
+                    {/* Removed FeatureIcon */}
+                  </div>
+                  <h3 
+                    className="text-4xl font-bold mb-2"
+                    style={{ color: `rgba(109,60,167,0.8)` }}
+                  >
+                    {stat.percentage}
+                  </h3>
+                  <p className="text-gray-600 text-lg">{stat.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        
-        <div 
-          ref={conclusionRef}
-          className="text-center max-w-3xl mx-auto mt-16"
-        >
-          <p className="text-xl text-gray-700 mb-8">
-            Traditional wellness programs fail to address these challenges, resulting in low engagement and minimal impact on employee wellbeing.
-          </p>
-          <AnimatedButton 
-            href={ROUTES.SOLUTION} 
-            variant="primary"
-            size="lg"
-          >
-            Discover Our Solution
-          </AnimatedButton>
+          </div>
+        </ContainerScroll>
         </div>
       </div>
     </BackgroundWrapper>
