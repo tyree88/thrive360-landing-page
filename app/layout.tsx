@@ -2,6 +2,8 @@ import './globals.css';
 import { Providers } from './providers';
 import { Inter } from 'next/font/google';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
+import AnimationScripts from './animation-scripts';
 // import { DefaultSeo } from 'next-seo';
 // import SEO from '../next-seo.config';
 
@@ -32,8 +34,31 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* Add preconnect for CDNs */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        
+        {/* Inline critical CSS for above-the-fold content */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .critical-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #2d1a45, #2a2a72);
+          }
+        `}} />
+      </head>
       <body className="min-h-screen bg-gradient-to-b from-white to-gray-50 antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <Suspense fallback={<div className="critical-hero" />}>
+            {children}
+          </Suspense>
+        </Providers>
+        
+        {/* Load animation scripts after initial render */}
+        <AnimationScripts />
       </body>
     </html>
   );

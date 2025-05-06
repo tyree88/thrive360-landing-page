@@ -1,16 +1,24 @@
 'use client';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useAnimation } from '@/context/AnimationContext';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 
 interface SphereSectionProps {
   children: React.ReactNode;
 }
 
 const SphereSection: React.FC<SphereSectionProps> = ({ children }) => {
+  // Get animation context for optimized GSAP usage
+  const { ScrollTrigger, registerScrollTrigger } = useAnimation();
+  const prefersReducedMotion = useReducedMotion();
+  
+  // State to handle window dimensions
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800
+  });
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
@@ -24,63 +32,105 @@ const SphereSection: React.FC<SphereSectionProps> = ({ children }) => {
   const trackHeight = 16;
   const sphereYInitial = -100;
   const sphereYOnTrack = 0;
-  const sphereYEnd = typeof window !== 'undefined' ? window.innerHeight * 8 : 6000;
+  const sphereYEnd = windowDimensions.height * 8;
 
+  // Animation values for the sphere movement
   const sphereY = useTransform(
     scrollYProgress,
     [0, 0.01, 0.15, 1],
     [sphereYInitial, sphereYOnTrack, sphereYOnTrack, sphereYEnd]
   );
 
+  // X-position values
+  const xPercentages = [0, 0, -45, 45, -45, 45, -45, 45, 0];
+  const xValues = xPercentages.map(percent => (percent / 100) * windowDimensions.width);
+  
   const sphereX = useTransform(
     scrollYProgress,
     [0, 0.01, 0.15, 0.30, 0.45, 0.60, 0.75, 0.9, 1],
-    [0, 0, -45, 45, -45, 45, -45, 45, 0].map(vw => 
-      typeof window !== 'undefined' ? window.innerWidth * (vw / 100) : 0
-    )
+    xValues
   );
 
+  // Scale values with reduced motion consideration
   const sphereScale = useTransform(
     scrollYProgress,
     [0, 0.1, 0.15, 0.2, 1],
-    [1, 1, 5, 1, 1]
+    [1, 1, prefersReducedMotion ? 2 : 5, 1, 1]
   );
 
-  const springConfig = { stiffness: 80, damping: 30, restDelta: 0.001 };
+  // Spring configuration for smoother animations
+  const springConfig = { 
+    stiffness: prefersReducedMotion ? 100 : 80, 
+    damping: prefersReducedMotion ? 50 : 30, 
+    restDelta: 0.001,
+    mass: 0.8
+  };
+  
+  // Apply springs to make movements smoother
   const sphereXSpring = useSpring(sphereX, springConfig);
   const sphereYSpring = useSpring(sphereY, springConfig);
   const sphereScaleSpring = useSpring(sphereScale, springConfig);
 
+  // Derive track position from sphere position
   const trackY = useTransform(sphereYSpring, y => y + sphereRadius + trackHeight / 2);
 
+  // Handle window resize and update animation values
   useEffect(() => {
-    try {
+    if (typeof window === 'undefined') return;
+    
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Use ScrollTrigger through the centralized animation context
+  useEffect(() => {
+    // Register ScrollTrigger safely
+    registerScrollTrigger(() => {
       if (!containerRef.current || !sphereRef.current) return;
 
-      // Create ScrollTrigger for sphere visibility
-      ScrollTrigger.create({
+      // Create ScrollTrigger for sphere visibility with optimized performance
+      const trigger = ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top top",
         end: "bottom bottom",
         onUpdate: (self) => {
           if (sphereRef.current) {
-            sphereRef.current.style.opacity = String(1 - Math.abs(self.getVelocity()) / 2000);
+            // Use requestAnimationFrame for smoother updates
+            requestAnimationFrame(() => {
+              const opacity = 1 - Math.min(1, Math.abs(self.getVelocity()) / 2000);
+              sphereRef.current!.style.opacity = String(opacity);
+            });
           }
         }
       });
-
-    } catch (error) {
-      console.error('Error setting up ScrollTrigger:', error);
-    }
-  }, []);
+      
+      return () => {
+        trigger.kill();
+      };
+    });
+  }, [registerScrollTrigger, ScrollTrigger]);
 
   return (
     <div ref={containerRef} className="relative min-h-screen">
       <motion.div 
         ref={bgRef}
         className="fixed inset-0 w-full h-screen -z-10 bg-gradient-to-b from-thrive-purple-darker/95 via-thrive-purple/90 to-thrive-blue-light/85"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
         style={{
           backgroundBlendMode: 'overlay',
+          willChange: 'opacity',
         }}
       />
 
@@ -89,7 +139,8 @@ const SphereSection: React.FC<SphereSectionProps> = ({ children }) => {
         style={{ 
           opacity: 0.4,
           zIndex: 1,
-          y: trackY
+          y: trackY,
+          willChange: 'transform'
         }} 
       />
 
@@ -100,7 +151,8 @@ const SphereSection: React.FC<SphereSectionProps> = ({ children }) => {
           x: sphereXSpring,
           y: sphereYSpring,
           scale: sphereScaleSpring,
-          zIndex: 5
+          zIndex: 5,
+          willChange: 'transform, opacity'
         }}
       />
 
