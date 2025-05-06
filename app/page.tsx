@@ -18,6 +18,7 @@ const jsonLd = {
 // Dynamic imports for client components
 const Navbar = dynamic(() => import('@/components/ui/Navbar'), { ssr: true });
 const HeroSection = dynamic(() => import('@/components/sections/HeroSection'));
+const StatsSection = dynamic(() => import('@/components/sections/StatsSection'));
 const ProblemSection = dynamic(() => import('@/components/sections/ProblemSection'));
 const SolutionSection = dynamic(() => import('@/components/sections/SolutionSection'));
 const JourneySection = dynamic(() => import('@/components/sections/JourneySection'));
@@ -40,6 +41,7 @@ export default function Home() {
         <SphereSection>
           <Navbar />
           <HeroSection />
+          <StatsSection />
           <ProblemSection />
           <SolutionSection />
           <JourneySection />

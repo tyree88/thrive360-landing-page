@@ -142,4 +142,35 @@ export const TESTIMONIALS = [
 export const COMPANY = {
   TAGLINE: 'Transforming mental health for modern organizations.',
   COPYRIGHT: '© 2024 Thrive360. All rights reserved.'
-}; 
+};
+
+export const WELLNESS_STATS = [
+  {
+    id: 'productivity-loss',
+    value: 67,
+    unit: '%',
+    description: 'Of employees report decreased productivity due to mental health challenges',
+    icon: 'brain'
+  },
+  {
+    id: 'program-engagement',
+    value: 23,
+    unit: '%',
+    description: 'Average engagement rate with traditional wellness programs',
+    icon: 'user-times'
+  },
+  {
+    id: 'burnout-rate',
+    value: 76,
+    unit: '%',
+    description: 'Of professionals experienced burnout symptoms in the past year',
+    icon: 'heartbeat'
+  },
+  {
+    id: 'business-impact',
+    value: 300,
+    unit: 'B',
+    description: 'Annual cost of employee wellness issues to businesses globally (USD)',
+    icon: 'dollar-sign'
+  }
+];
