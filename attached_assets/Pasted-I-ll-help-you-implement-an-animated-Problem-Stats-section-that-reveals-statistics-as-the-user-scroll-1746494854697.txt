@@ -1,0 +1,591 @@
+I'll help you implement an animated Problem Stats section that reveals statistics as the user scrolls. This section will follow the hero section and feature stacked statistics with animated text.
+
+Let's create this implementation:
+
+## 1. First, let's create the Problem Stats Component
+
+Here's how we'll build the animated problem stats section with scroll-based animations:
+
+```tsx
+'use client';
+
+import { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { problemStats } from '@/constants/problemStats';
+
+const ProblemStatsSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const statsContainerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Register GSAP plugins
+    gsap.registerPlugin(ScrollTrigger);
+    
+    if (!sectionRef.current || !headingRef.current || !statsContainerRef.current) return;
+    
+    // Create GSAP context for clean unmount
+    const ctx = gsap.context(() => {
+      // Create the main timeline that will be controlled by scroll
+      const mainTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 25%",
+          end: "bottom bottom",
+          scrub: 0.5, // Smooth scrubbing effect
+          pin: true, // Pin the section during animation
+          anticipatePin: 1,
+          markers: process.env.NODE_ENV === 'development',
+        }
+      });
+      
+      // Animate the heading
+      mainTimeline.from(headingRef.current, {
+        opacity: 0,
+        y: 50,
+        duration: 0.5
+      });
+      
+      // Get all stat items
+      const statItems = statsContainerRef.current.querySelectorAll('.stat-item');
+      
+      // Animate each stat item one after another
+      statItems.forEach((item, index) => {
+        const statValue = item.querySelector('.stat-value');
+        const statText = item.querySelector('.stat-text');
+        
+        // Offset each stat animation
+        const position = index * 0.15;
+        
+        // Add to the main timeline
+        mainTimeline.from(item, {
+          opacity: 0,
+          y: 60,
+          duration: 0.6
+        }, position);
+        
+        // Counter animation for the stat value
+        if (statValue) {
+          // Get target value from the data attribute
+          const targetValue = parseInt(statValue.getAttribute('data-value') || '0', 10);
+          const unit = statValue.getAttribute('data-unit') || '';
+          
+          mainTimeline.from(statValue, {
+            innerText: 0,
+            duration: 0.8,
+            snap: { innerText: 1 }, // Ensures integer counting
+            onUpdate: function() {
+              // @ts-ignore
+              statValue.innerText = Math.floor(this.targets()[0].innerText) + unit;
+            }
+          }, position + 0.1);
+        }
+        
+        // Animate the text separately for a staggered effect
+        if (statText) {
+          mainTimeline.from(statText, {
+            opacity: 0,
+            y: 20,
+            duration: 0.4
+          }, position + 0.2);
+        }
+      });
+      
+    }, sectionRef);
+    
+    // Cleanup function
+    return () => ctx.revert();
+  }, []);
+  
+  return (
+    <section 
+      ref={sectionRef}
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-purple-900 text-white py-24 px-6 overflow-hidden"
+      aria-label="Industry challenges"
+    >
+      <div className="container mx-auto max-w-5xl">
+        <h2 
+          ref={headingRef}
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-300"
+        >
+          The Wellbeing Crisis Is Real
+        </h2>
+        
+        <div 
+          ref={statsContainerRef}
+          className="flex flex-col gap-16 md:gap-24"
+        >
+          {problemStats.map((stat, index) => (
+            <div 
+              key={stat.id}
+              className="stat-item bg-white/10 backdrop-blur-lg rounded-xl p-8 md:p-12"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-4xl">
+                    {stat.icon}
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <h3 
+                    className="stat-value text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-white"
+                    data-value={stat.value}
+                    data-unit={stat.unit}
+                  >
+                    0{stat.unit}
+                  </h3>
+                  <p className="stat-text text-xl md:text-2xl text-blue-200">
+                    {stat.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center mt-20">
+          <p className="text-xl text-blue-200 max-w-3xl mx-auto">
+            Traditional wellness programs fail to address these challenges, 
+            resulting in low engagement and minimal impact on employee wellbeing.
+          </p>
+          <a 
+            href="#solution" 
+            className="mt-8 inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg"
+          >
+            Discover Thrive360's Solution
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProblemStatsSection;
+```
+
+## 2. Create the problem stats constants file
+
+```tsx
+// constants/problemStats.ts
+import { ReactNode } from 'react';
+import { FaChartLine, FaUserTimes, FaHeartbeat, FaDollarSign } from 'react-icons/fa';
+
+export interface ProblemStat {
+  id: string;
+  value: number;
+  unit: string;
+  description: string;
+  icon: ReactNode;
+}
+
+export const problemStats: ProblemStat[] = [
+  {
+    id: 'productivity-loss',
+    value: 67,
+    unit: '%',
+    description: 'Of employees report decreased productivity due to mental health challenges',
+    icon: <FaChartLine className="w-12 h-12" />,
+  },
+  {
+    id: 'program-engagement',
+    value: 23,
+    unit: '%',
+    description: 'Average engagement rate with traditional wellness programs',
+    icon: <FaUserTimes className="w-12 h-12" />,
+  },
+  {
+    id: 'burnout-rate',
+    value: 76,
+    unit: '%',
+    description: 'Of professionals experienced burnout symptoms in the past year',
+    icon: <FaHeartbeat className="w-12 h-12" />,
+  },
+  {
+    id: 'business-impact',
+    value: 300,
+    unit: 'B',
+    description: 'Annual cost of employee wellness issues to businesses globally (USD)',
+    icon: <FaDollarSign className="w-12 h-12" />,
+  },
+];
+```
+
+## 3. Integrate with your Next.js App Router
+
+Now, let's integrate this component into your landing page:
+
+```tsx
+// app/page.tsx
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import LoadingFallback from '@/components/common/LoadingFallback';
+
+// Import static version for SSR
+import StaticHero from '@/components/sections/Hero/StaticHero';
+// Create a static version of the Problem Stats section
+import StaticProblemStats from '@/components/sections/ProblemStats/StaticProblemStats';
+
+// Dynamic imports with client-side animation
+const AnimatedHero = dynamic(() => 
+  import('@/components/sections/Hero/AnimatedHero'), 
+  { ssr: false, loading: () => <StaticHero /> }
+);
+
+const AnimatedProblemStats = dynamic(() => 
+  import('@/components/sections/ProblemStats/ProblemStatsSection'), 
+  { ssr: false, loading: () => <StaticProblemStats /> }
+);
+
+export default function Home() {
+  return (
+    <main>
+      {/* Hero Section */}
+      <Suspense fallback={<StaticHero />}>
+        <AnimatedHero />
+      </Suspense>
+      
+      {/* Problem Stats Section */}
+      <Suspense fallback={<StaticProblemStats />}>
+        <AnimatedProblemStats />
+      </Suspense>
+      
+      {/* Additional sections */}
+    </main>
+  );
+}
+```
+
+## 4. Create a Static Version for SSR (to prevent layout shifts)
+
+```tsx
+// components/sections/ProblemStats/StaticProblemStats.tsx
+import { problemStats } from '@/constants/problemStats';
+
+const StaticProblemStats = () => {
+  return (
+    <section 
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-purple-900 text-white py-24 px-6 overflow-hidden"
+      aria-label="Industry challenges"
+    >
+      <div className="container mx-auto max-w-5xl">
+        <h2 
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-300"
+        >
+          The Wellbeing Crisis Is Real
+        </h2>
+        
+        <div className="flex flex-col gap-16 md:gap-24">
+          {problemStats.map((stat, index) => (
+            <div 
+              key={stat.id}
+              className="bg-white/10 backdrop-blur-lg rounded-xl p-8 md:p-12"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-4xl">
+                    {stat.icon}
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <h3 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-white">
+                    {stat.value}{stat.unit}
+                  </h3>
+                  <p className="text-xl md:text-2xl text-blue-200">
+                    {stat.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center mt-20">
+          <p className="text-xl text-blue-200 max-w-3xl mx-auto">
+            Traditional wellness programs fail to address these challenges, 
+            resulting in low engagement and minimal impact on employee wellbeing.
+          </p>
+          <a 
+            href="#solution" 
+            className="mt-8 inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg"
+          >
+            Discover Thrive360's Solution
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default StaticProblemStats;
+```
+
+## 5. Create a Custom Animation Hook (for better reusability)
+
+```tsx
+// hooks/useScrollAnimation.ts
+import { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+
+interface ScrollAnimationConfig {
+  trigger?: React.RefObject<HTMLElement>;
+  start?: string;
+  end?: string;
+  scrub?: boolean | number;
+  pin?: boolean;
+  markers?: boolean;
+  anticipatePin?: number;
+  onEnter?: () => void;
+  onLeave?: () => void;
+  onEnterBack?: () => void;
+  onLeaveBack?: () => void;
+}
+
+export function useScrollAnimation(
+  animationFunction: (timeline: gsap.core.Timeline) => void,
+  config: ScrollAnimationConfig = {},
+  dependencies: any[] = []
+) {
+  const timeline = useRef<gsap.core.Timeline | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  
+  useEffect(() => {
+    // Register GSAP plugins
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Set the trigger element
+    const triggerElement = config.trigger ? 
+      config.trigger.current : 
+      triggerRef.current;
+    
+    if (!triggerElement) return;
+    
+    // Create the animation context
+    const ctx = gsap.context(() => {
+      // Create the timeline
+      timeline.current = gsap.timeline({
+        scrollTrigger: {
+          trigger: triggerElement,
+          start: config.start || "top center",
+          end: config.end || "bottom center",
+          scrub: config.scrub === undefined ? false : config.scrub,
+          pin: config.pin || false,
+          markers: config.markers || false,
+          anticipatePin: config.anticipatePin || 0,
+          onEnter: config.onEnter,
+          onLeave: config.onLeave,
+          onEnterBack: config.onEnterBack,
+          onLeaveBack: config.onLeaveBack,
+        }
+      });
+      
+      // Execute the animation function
+      animationFunction(timeline.current);
+    });
+    
+    // Cleanup function
+    return () => {
+      ctx.revert();
+    };
+  }, dependencies);
+  
+  return { triggerRef, timeline };
+}
+```
+
+## 6. Refactored Problem Stats Section Using the Custom Hook
+
+```tsx
+'use client';
+
+import { useRef } from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { problemStats } from '@/constants/problemStats';
+
+const ProblemStatsSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const statsContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Use our custom animation hook
+  useScrollAnimation(
+    (timeline) => {
+      // Animate the heading
+      if (headingRef.current) {
+        timeline.from(headingRef.current, {
+          opacity: 0,
+          y: 50,
+          duration: 0.5
+        });
+      }
+      
+      // Get all stat items
+      if (statsContainerRef.current) {
+        const statItems = statsContainerRef.current.querySelectorAll('.stat-item');
+        
+        // Animate each stat item one after another
+        statItems.forEach((item, index) => {
+          const statValue = item.querySelector('.stat-value');
+          const statText = item.querySelector('.stat-text');
+          
+          // Offset each stat animation
+          const position = index * 0.15;
+          
+          // Add to the main timeline
+          timeline.from(item, {
+            opacity: 0,
+            y: 60,
+            duration: 0.6
+          }, position);
+          
+          // Counter animation for the stat value
+          if (statValue) {
+            const targetValue = parseInt(statValue.getAttribute('data-value') || '0', 10);
+            const unit = statValue.getAttribute('data-unit') || '';
+            
+            timeline.from(statValue, {
+              innerText: 0,
+              duration: 0.8,
+              snap: { innerText: 1 },
+              onUpdate: function() {
+                // @ts-ignore
+                statValue.innerText = Math.floor(this.targets()[0].innerText) + unit;
+              }
+            }, position + 0.1);
+          }
+          
+          // Animate the text separately for a staggered effect
+          if (statText) {
+            timeline.from(statText, {
+              opacity: 0,
+              y: 20,
+              duration: 0.4
+            }, position + 0.2);
+          }
+        });
+      }
+    },
+    {
+      trigger: sectionRef,
+      start: "top 25%",
+      end: "bottom bottom",
+      scrub: 0.5,
+      pin: true,
+      anticipatePin: 1,
+      markers: process.env.NODE_ENV === 'development',
+    }
+  );
+  
+  return (
+    <section 
+      ref={sectionRef}
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-purple-900 text-white py-24 px-6 overflow-hidden"
+      aria-label="Industry challenges"
+    >
+      <div className="container mx-auto max-w-5xl">
+        <h2 
+          ref={headingRef}
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-300"
+        >
+          The Wellbeing Crisis Is Real
+        </h2>
+        
+        <div 
+          ref={statsContainerRef}
+          className="flex flex-col gap-16 md:gap-24"
+        >
+          {problemStats.map((stat, index) => (
+            <div 
+              key={stat.id}
+              className="stat-item bg-white/10 backdrop-blur-lg rounded-xl p-8 md:p-12"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-4xl">
+                    {stat.icon}
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <h3 
+                    className="stat-value text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-white"
+                    data-value={stat.value}
+                    data-unit={stat.unit}
+                  >
+                    0{stat.unit}
+                  </h3>
+                  <p className="stat-text text-xl md:text-2xl text-blue-200">
+                    {stat.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center mt-20">
+          <p className="text-xl text-blue-200 max-w-3xl mx-auto">
+            Traditional wellness programs fail to address these challenges, 
+            resulting in low engagement and minimal impact on employee wellbeing.
+          </p>
+          <a 
+            href="#solution" 
+            className="mt-8 inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg"
+          >
+            Discover Thrive360's Solution
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProblemStatsSection;
+```
+
+## 7. Enhancing Performance with `will-change` Properties
+
+To further optimize for animation performance, especially on mobile, you can add the following CSS to your global styles:
+
+```css
+/* styles/globals.css */
+.stat-item {
+  will-change: opacity, transform;
+}
+
+.stat-value,
+.stat-text {
+  will-change: opacity, transform, innerText;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .stat-item,
+  .stat-value,
+  .stat-text {
+    will-change: auto;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+```
+
+## 8. Integration Notes
+
+1. **Prevent Layout Shifts**: The static version ensures no layout shifts during hydration
+2. **Animation Optimization**: The animation uses GSAP's pinning feature to create a storytelling effect as users scroll
+3. **Performance**: By using `will-change` properties and limiting the animated properties, we optimize GPU rendering
+4. **Accessibility**: We include a media query for users who prefer reduced motion
+5. **Mobile Consideration**: The design is fully responsive and performs well on mobile devices
+
+## Implementation Steps
+
+1. Create the constants file first (`constants/problemStats.ts`)
+2. Create the custom hook (`hooks/useScrollAnimation.ts`)
+3. Create the static SSR version (`StaticProblemStats.tsx`)
+4. Create the animated version (`ProblemStatsSection.tsx`)
+5. Integrate both into your landing page
+
+This implementation creates an engaging, scroll-based animation that reveals statistics as the user scrolls through the section. The pinning effect ensures each statistic gets the user's full attention before moving to the next one.
+
+Would you like me to explain any specific part of this implementation in more detail?
