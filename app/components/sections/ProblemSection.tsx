@@ -1,199 +1,120 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { PROBLEM_STATS, ROUTES } from '@/lib/constants';
+import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { useScrollTriggerAnimation } from '@/hooks/use-scroll-animation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faChartLine, faHeart, faDollarSign } from '@fortawesome/free-solid-svg-icons';
-import AnimatedButton from '@/components/ui/animated-button';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 const ProblemSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const subheadingRef = useRef<HTMLParagraphElement>(null);
-  const statsContainerRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-
-  // Map icon strings to FontAwesome components
-  const getIcon = (iconName: string) => {
-    switch(iconName) {
-      case 'fa-brain': return <FontAwesomeIcon icon={faBrain} className="w-8 h-8" />;
-      case 'fa-chart-line': return <FontAwesomeIcon icon={faChartLine} className="w-8 h-8" />;
-      case 'fa-heart': return <FontAwesomeIcon icon={faHeart} className="w-8 h-8" />;
-      case 'fa-dollar-sign': return <FontAwesomeIcon icon={faDollarSign} className="w-8 h-8" />;
-      default: return <FontAwesomeIcon icon={faBrain} className="w-8 h-8" />;
-    }
-  };
-
-  // For compatibility with the updated data structure
-  React.useEffect(() => {
-    // Handle the warning from console about container position
-    if (sectionRef.current) {
-      sectionRef.current.style.position = 'relative';
-    }
-  }, []);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Use the enhanced scroll animation hook
   useScrollTriggerAnimation(() => {
-    if (!sectionRef.current || !statsContainerRef.current) return;
+    if (!sectionRef.current || !statsRef.current || !containerRef.current) return;
 
-    // Create main scroll trigger for animation
-    const mainTimeline = gsap.timeline({
+    // Create main scroll trigger for pinning
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "50% 50%",
+      end: "+=400%",
+      pin: true,
+      pinSpacing: true,
+    });
+
+    // Animate each stat card
+    const stats = gsap.utils.toArray('.problem-stat');
+    const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 25%",
-        end: "bottom bottom",
-        scrub: 0.5,
-        markers: process.env.NODE_ENV === 'development' ? false : false, // Set to true for debugging
-      }
-    });
-    
-    // Animate the heading
-    if (headingRef.current && subheadingRef.current) {
-      mainTimeline
-        .from(headingRef.current, {
-          opacity: 0,
-          y: 50,
-          duration: 0.5
-        })
-        .from(subheadingRef.current, {
-          opacity: 0,
-          y: 30,
-          duration: 0.4
-        }, "-=0.3");
-    }
-    
-    // Get all stat items
-    const statItems = statsContainerRef.current.querySelectorAll('.stat-item');
-    
-    // Animate each stat item one after another
-    statItems.forEach((item, index) => {
-      const statValue = item.querySelector('.stat-value');
-      const statText = item.querySelector('.stat-text');
-      
-      // Offset each stat animation
-      const position = index * 0.15;
-      
-      // Add to the main timeline
-      mainTimeline.from(item, {
-        opacity: 0,
-        y: 60,
-        duration: 0.6
-      }, `stat-${index}`);
-      
-      // Counter animation for the stat value
-      if (statValue) {
-        // Get target value from the data attribute
-        const targetValue = parseInt(statValue.getAttribute('data-value') || '0', 10);
-        const unit = statValue.getAttribute('data-unit') || '';
-        
-        mainTimeline.from(statValue, {
-          innerText: 0,
-          duration: 0.8,
-          snap: { innerText: 1 }, // Ensures integer counting
-          onUpdate: function() {
-            // @ts-ignore - innerText is available on the DOM element
-            (statValue as HTMLElement).innerText = Math.floor(this.targets()[0].innerText) + unit;
-          }
-        }, `stat-${index}+=0.1`);
-      }
-      
-      // Animate the text separately for a staggered effect
-      if (statText) {
-        mainTimeline.from(statText, {
-          opacity: 0,
-          y: 20,
-          duration: 0.4
-        }, `stat-${index}+=0.2`);
+        trigger: statsRef.current,
+        start: "top center",
+        end: "+=300%",
+        scrub: 1,
+        snap: {
+          snapTo: 1 / (stats.length - 1),
+          duration: { min: 0.2, max: 0.5 },
+          delay: 0,
+        },
       }
     });
 
-    // Animate CTA
-    if (ctaRef.current) {
-      mainTimeline.from(ctaRef.current, {
-        opacity: 0,
-        y: 30,
-        duration: 0.5
-      }, "-=0.2");
-    }
+    // Initial state for all stats
+    gsap.set(stats, { autoAlpha: 0, scale: 0.8 });
+
+    // Optimize animation performance
+    gsap.set(stats, { willChange: "transform, opacity" });
+
+    // Animate each stat sequentially with optimized properties
+    stats.forEach((stat, index) => {
+      tl.to(stat as HTMLElement, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.5,
+        force3D: true,
+      })
+      .to(stat as HTMLElement, {
+        autoAlpha: index === stats.length - 1 ? 1 : 0.3,
+        scale: index === stats.length - 1 ? 1 : 0.9,
+        force3D: true,
+      }, ">");
+    });
   }, []);
 
   return (
     <BackgroundWrapper
       id="problem"
       variant="light"
-      className="section relative min-h-screen py-20"
+      className="section"
       showTransitionTop={true}
       showTransitionBottom={true}
     >
-      <div ref={sectionRef} className="container mx-auto max-w-6xl px-6 relative z-10">
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 text-sm font-medium bg-thrive-purple-light/10 text-thrive-purple rounded-full mb-6">
-            The Wellbeing Crisis
-          </span>
-          <h2 
-            ref={headingRef}
-            className="text-3xl md:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Modern Challenges Need Modern Solutions
-          </h2>
-          <p 
-            ref={subheadingRef}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
-          >
-            Traditional wellness programs fail to address today's mental health needs.
-          </p>
-        </div>
-        
-        <div 
-          ref={statsContainerRef}
-          className="flex flex-col gap-10 md:gap-16"
+      <div ref={sectionRef} className="min-h-screen">
+        <div ref={containerRef} className="h-full">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <span className="inline-block px-4 py-1.5 text-sm font-medium bg-[#988AD5]/10 text-[#6D3CA7] rounded-full mb-6">
+                The Challenge
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+                Mental Health Care is Broken
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Traditional solutions fail to meet modern needs, leaving critical gaps in care.
+              </p>
+            </>
+          }
         >
-          {PROBLEM_STATS.map((stat) => (
-            <div 
-              key={stat.id}
-              className="stat-item bg-white rounded-xl shadow-md p-6 md:p-10 transform transition-all"
-            >
-              <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
-                <div className="flex-shrink-0">
+          <div ref={statsRef} className="max-w-6xl mx-auto px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {PROBLEM_STATS.map((stat, index) => (
+                <div
+                  key={index}
+                  className="problem-stat p-6 flex flex-col items-center justify-center text-center bg-white rounded-xl shadow-lg border border-gray-100"
+                >
                   <div 
-                    className="w-20 h-20 rounded-full flex items-center justify-center text-white"
-                    style={{ backgroundColor: stat.color }}
+                    className="mb-3 w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `rgba(109,60,167,0.08)` }}
                   >
-                    {getIcon(stat.icon)}
+                    {/* Removed FeatureIcon */}
                   </div>
-                </div>
-                <div className="flex-grow text-center md:text-left">
                   <h3 
-                    className="stat-value text-4xl md:text-5xl lg:text-6xl font-bold mb-3 text-gray-900"
-                    data-value={stat.value}
-                    data-unit={stat.unit}
+                    className="text-4xl font-bold mb-2"
+                    style={{ color: `rgba(109,60,167,0.8)` }}
                   >
-                    0{stat.unit}
+                    {stat.percentage}
                   </h3>
-                  <p className="stat-text text-lg md:text-xl text-gray-600">
-                    {stat.description}
-                  </p>
+                  <p className="text-gray-600 text-lg">{stat.description}</p>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-        
-        <div ref={ctaRef} className="text-center mt-20">
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-            Thrive360 tackles these challenges head-on with a neuroplastic approach that transforms how employees engage with mental wellness.
-          </p>
-          <AnimatedButton 
-            href={ROUTES.SOLUTION} 
-            variant="primary"
-            size="lg"
-          >
-            Discover Our Solution
-          </AnimatedButton>
+          </div>
+        </ContainerScroll>
         </div>
       </div>
     </BackgroundWrapper>

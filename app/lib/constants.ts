@@ -72,36 +72,16 @@ export const IMPACT_STATS = [
 
 export const PROBLEM_STATS = [
   {
-    id: 'productivity-loss',
     icon: 'fa-brain',
     color: '#6D3CA7',
-    value: 67,
-    unit: '%',
-    description: 'Of employees report decreased productivity due to mental health challenges'
+    percentage: '60%',
+    description: '60% of employees report high stress levels.'
   },
   {
-    id: 'program-engagement',
-    icon: 'fa-chart-line',
-    color: '#3462AE',
-    value: 23,
-    unit: '%',
-    description: 'Average engagement rate with traditional wellness programs'
-  },
-  {
-    id: 'burnout-rate',
     icon: 'fa-heart',
     color: '#E57373',
-    value: 76,
-    unit: '%',
-    description: 'Of professionals experienced burnout symptoms in the past year'
-  },
-  {
-    id: 'business-impact',
-    icon: 'fa-dollar-sign',
-    color: '#10B981',
-    value: 300,
-    unit: 'B',
-    description: 'Annual cost of employee wellness issues to businesses globally (USD)'
+    percentage: '40%',
+    description: '40% do not seek help due to stigma.'
   },
 ];
 
