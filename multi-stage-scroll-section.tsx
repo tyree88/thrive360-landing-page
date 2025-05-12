@@ -1,3 +1,5 @@
+"use client"
+
 import ThriveScrollSequence, { type ScrollSequenceSection } from "./thrive-scroll-sequence"
 import SectionTransition from "./scroll-sequence/SectionTransition"
 import PersonalizedAssessmentContent from "./scroll-sequence/content/PersonalizedAssessmentContent"

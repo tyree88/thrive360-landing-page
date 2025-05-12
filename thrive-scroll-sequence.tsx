@@ -1,3 +1,4 @@
+"use client"
 import { useScrollSequence } from "./scroll-sequence/useScrollSequence"
 import type { ThriveScrollSequenceProps } from "./scroll-sequence/types"
 import { cn } from "@/lib/utils"
