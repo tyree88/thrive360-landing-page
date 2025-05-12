@@ -1,7 +1,20 @@
+'use client';
+
+import { HeroSkeleton, ProblemSectionSkeleton } from "@/components/ui/skeleton";
+import BackgroundWrapper from "@/components/ui/background-wrapper";
+
 export default function Loading() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-    </div>
-  )
+    <main className="min-h-screen w-full">
+      {/* Hero Section Skeleton */}
+      <BackgroundWrapper variant="dark" className="section">
+        <HeroSkeleton className="py-24" />
+      </BackgroundWrapper>
+      
+      {/* Problem Section Skeleton */}
+      <BackgroundWrapper variant="dark" className="section">
+        <ProblemSectionSkeleton />
+      </BackgroundWrapper>
+    </main>
+  );
 }
