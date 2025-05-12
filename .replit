@@ -1,0 +1,3 @@
+[deployment]
+run = ["sh", "-c", "pnpm run start"]
+build = ["sh", "-c", "pnpm install && pnpm run build"]
