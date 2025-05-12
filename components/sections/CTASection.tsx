@@ -104,6 +104,16 @@ const CTASection = () => {
                   </div>
                   <p className="text-thrive-purple-700">Ongoing support and optimization</p>
                 </div>
+                
+                <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                  <FlowButton text="Get Started" />
+                  <a 
+                    href="/solutions/teletherapy" 
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-thrive-purple-300 bg-white text-thrive-purple-700 hover:bg-thrive-purple-50 transition-colors"
+                  >
+                    Explore Teletherapy Solution
+                  </a>
+                </div>
               </div>
             </div>
 
