@@ -1,3 +1,23 @@
+modules = ["nodejs-20"]
 [deployment]
-run = ["sh", "-c", "pnpm run start"]
-build = ["sh", "-c", "pnpm install && pnpm run build"]
+run = ["sh", "-c", "next start"]
+build = ["sh", "-c", "npm install && npm run build"]
+
+[workflows]
+
+[[workflows.workflow]]
+name = "Nextjs"
+mode = "sequential"
+author = 419224
+
+[[workflows.workflow.tasks]]
+task = "packager.installForLanguage"
+args = "nodejs"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[ports]]
+localPort = 3000
+externalPort = 80

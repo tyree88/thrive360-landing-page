@@ -1,0 +1,223 @@
+Below is a complete, end-to-end blueprint for your “Problems We Solve” horizontal reveal carousel—every piece you’ll need, every state change, and every integration detail—from the moment the user scrolls into the section to the moment it un-pins and hands control back to normal page flow.
+
+1. Technical Foundations
+Smooth Scrolling Engine
+
+You’re using Lenis to replace native scroll with a buttery-smooth, requestAnimationFrame-driven scroll.
+
+GSAP’s ScrollTrigger must be told to “listen” to Lenis instead of the browser: use a scrollerProxy that delegates scrollTop to Lenis and calls ScrollTrigger.update() on each Lenis tick.
+
+On init you must call ScrollTrigger.refresh() (after scrollerProxy) so all start/end positions are correctly measured.
+
+Animation Library
+
+GSAP v3 with the ScrollTrigger plugin.
+
+Optionally you can use Framer-Motion for entrance fades of your header text, but the core pin + scrub is pure GSAP.
+
+Responsive Breakpoints
+
+Desktop (≥768px): run the horizontal reveal.
+
+Tablet (≥640px & <768px): consider showing two cards at once (mask = 50% width, strip steps of 50%).
+
+Mobile (<640px): disable horizontal reveal entirely; fallback to a vertical fade carousel (one card per viewport).
+
+2. HTML Structure & Semantics
+Outer Section
+
+A single <section> wrapping everything, with an ID or class so GSAP can target it.
+
+Inside, your sticky header/navigation pills sit at the top.
+
+Mask Container
+
+A direct child of that section, centered, whose overflow is hidden.
+
+This is the “window” through which the strip of cards will be revealed.
+
+Strip Container
+
+Inside the mask, a flex row of all four problem cards side by side.
+
+No wrapping—each card sits exactly next to the next.
+
+Individual Cards
+
+Each card is semantically an <article> or <div> with:
+
+A gradient-filled title
+
+A descriptive paragraph
+
+Two sub-cards (“Impact” and “Solution Approach”)
+
+Cards have consistent padding, backdrop-blur, rounded corners and a subtle drop-shadow.
+
+Progress & Controls
+
+Below the mask, a row of dots or bars that highlight which card-set is currently active.
+
+These act as buttons: clicking jumps the scroll to the appropriate snap point.
+
+3. Essential CSS Layout
+Mask
+
+Width: starts at 25% of the viewport (showing only the first card).
+
+Height: match your card height or 100vh if you want a full-screen effect.
+
+Overflow: hidden; ensures only the masked portion of the strip is visible.
+
+Strip
+
+Display: flex in row direction.
+
+Total Width: 400% (4 cards × 100% of the mask each).
+
+Will-change: transform to hint GPU acceleration.
+
+Card
+
+Flex-basis: 25% (so each card occupies exactly one “window”).
+
+Min-width / Max-width: 25% to prevent shrinking or growing.
+
+Padding & Visuals: maintain your backdrop-blur, border, radius, shadow, and text styles.
+
+Responsive Overrides
+
+At tablet width, override mask to 50% and card flex to 50%.
+
+At mobile, mask/strip/card widths revert to 100% so the horizontal reveal is disabled.
+
+4. ScrollTrigger + Lenis Integration
+Initialize Lenis
+
+Create your Lenis instance and kick off its RAF loop.
+
+On each Lenis frame, call ScrollTrigger.update().
+
+scrollerProxy
+
+Tell ScrollTrigger that document.body is being scrolled by Lenis.
+
+Provide scrollTop getter/setter that delegates to Lenis’s scroll position.
+
+Provide a getBoundingClientRect() shim so ScrollTrigger still thinks the viewport is the right size.
+
+Optionally set pinType to "transform" if your wrapper uses transforms.
+
+Refresh
+
+Once scrollerProxy is in place, run ScrollTrigger.refresh() so GSAP measures all elements against the correct scroller.
+
+5. Animation Flow & Timeline
+Pinning the Section
+
+When the top of your Problem section reaches the top of the viewport, pin the section in place.
+
+The pin stays active for exactly 300% (three viewport-heights) of scroll—one full screen for each additional card reveal beyond the first.
+
+Mask Expansion Tween
+
+Over that pinned scroll span, animate the mask’s width from 25% → 100%.
+
+Tie this tween to scroll with scrub:true and share the same start/end as the pin.
+
+Strip Translation Tween
+
+Simultaneously, animate the strip’s horizontal offset from 0 → -75% of its own width.
+
+This slides the cards left so new ones come into view exactly as the mask widens.
+
+Snap Points
+
+Define a snap array at [0, 1/3, 2/3, 1] of the scroll progress.
+
+This ensures that when the user stops scrolling they’ll always see exactly 1, then 2, then 3, then 4 cards without half-revealed overshoot.
+
+Un-pinning
+
+Once you scroll past the final 100% reveal, GSAP automatically un-pins and the page continues scrolling normally into whatever comes next.
+
+6. UI Feedback & Controls
+Navigation Pills
+
+Highlight the active card-set as the scroll crosses each 33% threshold.
+
+Clicking a pill programmatically jumps the scroller to the matching snap position (0%, 33%, 66%, 100%) via ScrollTrigger’s scroll() API.
+
+Progress Indicator
+
+Below the mask, a row of four bars or dots reflects the current active index—update on each onUpdate callback.
+
+Provide hover and focus styles for accessibility and visual polish.
+
+Subtle Glow
+
+At the final reveal, fade in a soft “glow” gradient behind the cards to signal you’ve reached the end of this interaction.
+
+7. Accessibility & Fallbacks
+Keyboard Navigation
+
+Ensure pills/dots are focusable buttons.
+
+Hitting Enter or Space triggers the same scroll-jump logic.
+
+Screen Readers
+
+Announce the current card’s title and position (e.g. “Card 2 of 4: Slow Performance”).
+
+Use aria-live="polite" around the title so changes are read as you scroll.
+
+No-JS / No-Lenis Fallback
+
+If Lenis or GSAP is unavailable, cards should gracefully degrade into a vertical stack of problem cards that users scroll normally.
+
+You can achieve this by wrapping your horizontal container in a media query or a no-js class that forces display:block.
+
+8. Performance & Cleanup
+will-change hints on mask and strip to promote GPU layering.
+
+Kill all ScrollTrigger instances on component unmount or route change to prevent memory leaks.
+
+Throttle heavy style recalculations by batching any layout writes (e.g. setting inline styles) outside scroll callbacks if needed.
+
+9. Testing & Quality Assurance
+Cross-Browser
+
+Chrome, Firefox, Safari (both desktop and mobile Safari on iOS).
+
+Ensure Lenis + scrollerProxy works consistently (sometimes Safari needs the pinType tweak).
+
+Responsive
+
+Validate tablet mode (two-card reveal) and mobile fallback (single vertical carousel).
+
+Check snap behavior at every scroll speed.
+
+Accessibility Audit
+
+Keyboard tab order, focus indicators, screen-reader announcements.
+
+Color-contrast ratios for text on backgrounds and glow overlays.
+
+Performance Profiling
+
+Inspect with Chrome DevTools to confirm no dropped frames during heavy tweens.
+
+Verify that will-change layers are not misused to avoid memory bloat.
+
+Summary of Flow
+Scroll down → section enters viewport → pin.
+
+Mask starts narrow (25%) → expands in lock-step with scroll.
+
+Strip slides left (0%→–75%) as new cards enter view.
+
+Snap at quarter-points (1→2→3→4 cards visible).
+
+Un-pin automatically when reveal completes → resume normal scroll.
+
+Follow this spec and you’ll have a seamless, high-impact carousel that “grows” from one card to four, with perfect pinning, snapping, and smooth-scroll integration—even when Lenis is running the scroll engine.

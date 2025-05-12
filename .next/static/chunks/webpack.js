@@ -190,10 +190,7 @@
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-<<<<<<< HEAD
-/******/ 		__webpack_require__.h = () => ("1695753df3231810")
-=======
-/******/ 		__webpack_require__.h = () => ("1d6f19661a6246c5")
+/******/ 		__webpack_require__.h = () => ("27a492f7a9b292e2")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
@@ -206,7 +203,6 @@
 /******/ 				if (typeof window === 'object') return window;
 /******/ 			}
 /******/ 		})();
->>>>>>> f4a24c1 (udpate it)
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
