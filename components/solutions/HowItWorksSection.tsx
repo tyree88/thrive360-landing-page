@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-interface WorkStep {
+interface Step {
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -13,60 +13,102 @@ interface WorkStep {
 interface HowItWorksSectionProps {
   title: string;
   highlightedText?: string;
-  steps: WorkStep[];
+  steps: Step[];
+  className?: string;
 }
 
 export default function HowItWorksSection({
   title,
   highlightedText,
-  steps
+  steps,
+  className = ""
 }: HowItWorksSectionProps) {
+  const [activeStep, setActiveStep] = useState(0);
+  
   // Process title if we have highlighted text
   const processedTitle = highlightedText 
     ? title.replace(highlightedText, `<span class="gradient-text">${highlightedText}</span>`)
     : title;
 
   return (
-    <section className="py-16 md:py-24 bg-brand-gray-50 text-brand-gray-900">
+    <section className={`py-16 md:py-24 bg-brand-gray-100 ${className}`}>
       <div className="container mx-auto px-4">
-        <motion.h2 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16"
-          dangerouslySetInnerHTML={{ __html: processedTitle }}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative">
-          {/* Connecting line for desktop */}
-          <div className="hidden md:block absolute top-1/2 left-0 w-full h-px -translate-y-1/2">
-            <svg width="100%" height="2" className="overflow-visible">
-              <line x1="15%" y1="1" x2="85%" y2="1" strokeWidth="2" strokeDasharray="10,10" className="stroke-brand-purple-400/50"/>
-            </svg>
-          </div>
-
+          className="max-w-2xl mx-auto text-center mb-12 md:mb-16"
+        >
+          <h2 
+            className="text-3xl md:text-4xl font-bold mb-6 text-brand-gray-900"
+            dangerouslySetInnerHTML={{ __html: processedTitle }}
+          />
+          <div className="h-1 w-20 bg-gradient-to-r from-brand-purple-500 to-brand-blue-600 rounded-full mx-auto"></div>
+        </motion.div>
+        
+        <div className="relative max-w-4xl mx-auto">
+          {/* Vertical timeline line */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full w-1 bg-brand-purple-200 rounded"></div>
+          
           {steps.map((step, index) => (
-            <motion.div 
+            <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative flex flex-col items-center text-center p-6 bg-white backdrop-blur-md rounded-xl shadow-xl border border-brand-purple-400/30 z-10"
+              className={`relative mb-16 last:mb-0 ${index % 2 === 0 ? 'md:text-right md:pr-16 pl-8 md:pl-0' : 'md:text-left md:pl-16 pl-8 md:ml-auto'}`}
+              onClick={() => setActiveStep(index)}
             >
+              {/* Timeline dot */}
               <div 
-                className="p-5 bg-brand-purple-400/10 rounded-full mb-6 inline-block border-2" 
-                style={{ borderColor: step.color || 'var(--colors-brand-purple-600)' }}
+                className={`absolute left-0 md:left-1/2 top-1 transform md:-translate-x-1/2 w-6 h-6 rounded-full border-2 z-10 cursor-pointer
+                  ${activeStep === index ? 'border-brand-purple-500 scale-125' : 'border-brand-purple-300'}`}
+                style={{ backgroundColor: step.color || 'var(--colors-brand-purple-500)' }}
+                onClick={() => setActiveStep(index)}
+              />
+              
+              {/* Connected content box */}
+              <div 
+                className={`relative rounded-xl p-6 transition-all shadow-md w-full md:w-1/2
+                  ${activeStep === index 
+                    ? 'bg-white border-l-4 shadow-lg scale-105' 
+                    : 'bg-brand-gray-50 border-l-2'}`}
+                style={{ 
+                  borderLeftColor: step.color || 'var(--colors-brand-purple-500)',
+                  ...(index % 2 === 0 ? { marginLeft: 'auto' } : {}) 
+                }}
               >
-                {step.icon}
+                <div className="flex items-start gap-4 md:gap-6">
+                  <div className="p-2 rounded-lg" style={{ color: step.color || 'var(--colors-brand-purple-500)' }}>
+                    {step.icon}
+                  </div>
+                  <div className={`${index % 2 === 0 ? 'text-left' : 'text-left'}`}>
+                    <h3 className="text-xl font-semibold mb-2 text-brand-gray-900">
+                      {step.title}
+                    </h3>
+                    <p className="text-base text-brand-purple-800">{step.description}</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-semibold text-brand-gray-900 mb-3">{step.title}</h3>
-              <p className="text-brand-purple-800">{step.description}</p>
-              {/* Vertical connector line for mobile */}
-              {index !== 0 && (
-                <div className="md:hidden absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 border-l-2 border-dashed border-brand-purple-400/50"></div>
-              )}
             </motion.div>
+          ))}
+        </div>
+        
+        {/* Step markers */}
+        <div className="flex justify-center mt-8 space-x-3">
+          {steps.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveStep(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                activeStep === index 
+                  ? 'bg-brand-purple-500 scale-125' 
+                  : 'bg-brand-purple-300 hover:bg-brand-purple-400'
+              }`}
+              aria-label={`Go to step ${index + 1}`}
+            />
           ))}
         </div>
       </div>

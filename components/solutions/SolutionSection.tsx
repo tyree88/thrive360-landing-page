@@ -24,43 +24,69 @@ export default function SolutionSection({
   const processedTitle = highlightedText 
     ? title.replace(highlightedText, `<span class="gradient-text">${highlightedText}</span>`)
     : title;
-
+    
   return (
-    <section className="py-16 md:py-24 bg-brand-gray-50 text-brand-gray-900">
+    <section className="py-16 md:py-24 bg-brand-gray-50">
       <div className="container mx-auto px-4">
-        <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-center mb-6"
-          dangerouslySetInnerHTML={{ __html: processedTitle }}
-        />
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg md:text-xl text-brand-purple-800 text-center max-w-3xl mx-auto mb-12 md:mb-16"
-        >
-          {description}
-          {badgeElement && (
-            <span className="ml-2">{badgeElement}</span>
-          )}
-        </motion.p>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7 }}
-          className="max-w-4xl mx-auto p-6 md:p-8 bg-white backdrop-blur-md rounded-xl shadow-xl border border-brand-purple-400/30"
-        >
-          <img 
-            src={imageSrc} 
-            alt={imageAlt} 
-            className="w-full h-auto rounded-lg"
-          />
-        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+            className="order-2 lg:order-1"
+          >
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-brand-purple-500/10 to-brand-blue-600/10 rounded-3xl blur-lg"></div>
+              <div className="relative rounded-xl overflow-hidden shadow-xl border border-brand-purple-400/20">
+                <img src={imageSrc} alt={imageAlt} className="w-full h-auto" />
+                {badgeElement && (
+                  <div className="absolute top-4 right-4">
+                    {badgeElement}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="order-1 lg:order-2"
+          >
+            <h2 
+              className="text-3xl md:text-4xl font-bold mb-6 text-brand-gray-900"
+              dangerouslySetInnerHTML={{ __html: processedTitle }}
+            />
+            
+            <div className="relative mb-8">
+              <div className="h-1 w-20 bg-gradient-to-r from-brand-purple-500 to-brand-purple-400 rounded-full mb-8"></div>
+            </div>
+            
+            <p className="text-lg text-brand-purple-800 mb-8 leading-relaxed">
+              {description}
+            </p>
+            
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center p-3 rounded-lg bg-brand-purple-100/50 border border-brand-purple-200">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-brand-purple-500 to-brand-purple-400 mr-2"></div>
+                <span className="text-sm font-medium text-brand-purple-700">Fast integration</span>
+              </div>
+              
+              <div className="flex items-center p-3 rounded-lg bg-brand-purple-100/50 border border-brand-purple-200">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-brand-purple-500 to-brand-purple-400 mr-2"></div>
+                <span className="text-sm font-medium text-brand-purple-700">Seamless experience</span>
+              </div>
+              
+              <div className="flex items-center p-3 rounded-lg bg-brand-purple-100/50 border border-brand-purple-200">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-brand-purple-500 to-brand-purple-400 mr-2"></div>
+                <span className="text-sm font-medium text-brand-purple-700">Proven results</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

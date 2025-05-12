@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import NeuroBadge from '@/components/ui/NeuroBadge';
 
-interface CapabilityFeature {
+interface Feature {
   icon: React.ReactNode;
   title: string;
   benefit: string;
@@ -12,9 +12,9 @@ interface CapabilityFeature {
 }
 
 interface CapabilitiesSectionProps {
-  title: React.ReactNode | string;
+  title: string;
   highlightedText?: string;
-  features: CapabilityFeature[];
+  features: Feature[];
   badgeComponent?: React.ReactNode;
 }
 
@@ -24,47 +24,90 @@ export default function CapabilitiesSection({
   features,
   badgeComponent
 }: CapabilitiesSectionProps) {
-  // Process the title if it's a string and has highlighted text
-  const processedTitle = typeof title === 'string' && highlightedText
+  // Process title if we have highlighted text
+  const processedTitle = highlightedText 
     ? title.replace(highlightedText, `<span class="gradient-text">${highlightedText}</span>`)
     : title;
-
+    
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
+  
   return (
-    <section className="py-16 md:py-24 bg-brand-gray-50/50 text-brand-gray-900">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <motion.h2 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          {typeof processedTitle === 'string' 
-            ? <span dangerouslySetInnerHTML={{ __html: processedTitle }} />
-            : processedTitle
-          }
-        </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 
+            className="text-3xl md:text-4xl font-bold mb-6 text-brand-gray-900"
+            dangerouslySetInnerHTML={{ __html: processedTitle }}
+          />
+          <div className="h-1 w-20 bg-gradient-to-r from-brand-purple-500 to-brand-blue-600 rounded-full mx-auto"></div>
+        </motion.div>
+        
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+        >
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="glow-border-card"
+              variants={itemVariants}
+              className="bg-gradient-to-b from-white to-brand-gray-50 border border-brand-purple-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group"
             >
-              <Card className="h-full p-6 bg-white backdrop-blur-sm border-brand-purple-400/30 text-brand-gray-900">
-                <div className="flex items-center mb-4">
-                  <span className="p-3 bg-brand-purple-600/10 rounded-full mr-4">{feature.icon}</span>
-                  <CardTitle className="text-xl text-brand-gray-900">{feature.title}</CardTitle>
+              <div className="flex items-start">
+                <div className="p-3 mr-4 rounded-full bg-brand-purple-100 group-hover:bg-brand-purple-200 transition-colors">
+                  {feature.icon}
                 </div>
-                <CardDescription className="text-brand-purple-800 mb-3">{feature.benefit}</CardDescription>
-                {feature.showBadge && badgeComponent}
-              </Card>
+                <div>
+                  <div className="flex items-center mb-2">
+                    <h3 className="text-xl font-semibold text-brand-purple-800 mr-2">
+                      {feature.title}
+                    </h3>
+                    {feature.showBadge && <NeuroBadge size="sm" />}
+                  </div>
+                  <p className="text-brand-purple-700">{feature.benefit}</p>
+                </div>
+              </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
+        
+        {badgeComponent && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-12 md:mt-16 text-center"
+          >
+            {badgeComponent}
+            <p className="text-sm text-brand-purple-700 mt-2">Powered by Neuroplastic Engagement™</p>
+          </motion.div>
+        )}
       </div>
     </section>
   );
