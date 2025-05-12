@@ -39,6 +39,9 @@ export function NavigationMenuDemo() {
                   <ListItem href="/business-solutions" title="Business Solutions">
                     Tailored approaches to improve workplace wellbeing
                   </ListItem>
+                  <ListItem href="/solutions/teletherapy" title="Teletherapy Solutions">
+                    Advanced teletherapy with Neuroplastic Engagement™
+                  </ListItem>
                   <ListItem href="/eap-solutions" title="EAP Solutions">
                     Enhanced employee assistance programs
                   </ListItem>

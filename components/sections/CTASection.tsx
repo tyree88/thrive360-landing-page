@@ -14,6 +14,24 @@ const CTASection = () => {
   const sectionRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  
+  // Add gradient overlay using CSS
+  useEffect(() => {
+    if (sectionRef.current) {
+      const gradientOverlay = document.createElement('div');
+      gradientOverlay.className = 'absolute inset-0 bg-gradient-to-b from-thrive-purple-100 to-thrive-purple-50 opacity-80 z-0';
+      sectionRef.current.appendChild(gradientOverlay);
+    }
+    
+    return () => {
+      if (sectionRef.current) {
+        const overlay = sectionRef.current.querySelector('.bg-gradient-to-b');
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!sectionRef.current || !contentRef.current || !formRef.current) return
@@ -60,8 +78,7 @@ const CTASection = () => {
       id="contact"
       ref={sectionRef}
       variant="light"
-      bgClassName="bg-thrive-purple-50"
-      overlayClassName="bg-gradient-to-b from-thrive-purple-100 to-thrive-purple-50 opacity-80"
+      customBackground="bg-thrive-purple-50"
       className="min-h-screen flex items-center"
     >
       <div
