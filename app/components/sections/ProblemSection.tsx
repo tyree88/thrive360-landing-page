@@ -114,15 +114,17 @@ const ProblemSection: React.FC = () => {
 
   // Set up the horizontal reveal animation
   useScrollAnimation(() => {
-    if (!sectionRef.current || !maskRef.current || !stripRef.current || !lenis) return;
+    if (!sectionRef.current || !maskRef.current || !stripRef.current || !lenis) return undefined;
     
     // Set up ScrollTrigger to work with Lenis
     function setupScrollerProxy() {
+      if (!lenis) return;
+      
       // Tell ScrollTrigger to use these proxy methods for the element instead of scroll/getBoundingClientRect
       ScrollTrigger.scrollerProxy(document.body, {
         scrollTop(value) {
-          if (arguments.length) {
-            lenis.scrollTo(value);
+          if (arguments.length && lenis) {
+            lenis.scrollTo(value as number);
           }
           return lenis.scroll;
         },
@@ -153,12 +155,12 @@ const ProblemSection: React.FC = () => {
     // Apply responsive styles based on viewport size
     if (viewportSize === 'desktop') {
       // Desktop: mask starts at 25%, expands to 100%
-      gsap.set(maskRef.current, { width: "25%" });
+      gsap.set(maskRef.current as Element, { width: "25%" });
       
       // Cards each take percentage based on number of cards
       const cardWidth = `${100 / numCards}%`;
-      gsap.utils.toArray('.problem-card').forEach(card => {
-        gsap.set(card, { 
+      gsap.utils.toArray<Element>('.problem-card').forEach(card => {
+        gsap.set(card as Element, { 
           flexBasis: cardWidth, 
           minWidth: cardWidth, 
           maxWidth: cardWidth 
@@ -167,11 +169,11 @@ const ProblemSection: React.FC = () => {
     } 
     else if (viewportSize === 'tablet') {
       // Tablet: mask starts at 50%, expands to 100%
-      gsap.set(maskRef.current, { width: "50%" });
+      gsap.set(maskRef.current as Element, { width: "50%" });
       
       // Cards each take 50% width
-      gsap.utils.toArray('.problem-card').forEach(card => {
-        gsap.set(card, { 
+      gsap.utils.toArray<Element>('.problem-card').forEach(card => {
+        gsap.set(card as Element, { 
           flexBasis: "50%", 
           minWidth: "50%", 
           maxWidth: "50%" 
@@ -180,19 +182,19 @@ const ProblemSection: React.FC = () => {
     }
     else {
       // Mobile: disable horizontal animation
-      gsap.set(maskRef.current, { 
+      gsap.set(maskRef.current as Element, { 
         width: "100%",
         height: "auto",
         overflow: "visible"
       });
       
-      gsap.set(stripRef.current, {
+      gsap.set(stripRef.current as Element, {
         display: "block",
         width: "100%"
       });
       
-      gsap.utils.toArray('.problem-card').forEach(card => {
-        gsap.set(card, { 
+      gsap.utils.toArray<Element>('.problem-card').forEach(card => {
+        gsap.set(card as Element, { 
           flexBasis: "100%", 
           minWidth: "100%", 
           maxWidth: "100%"
@@ -237,13 +239,13 @@ const ProblemSection: React.FC = () => {
       const moveDistancePercent = ((numCards - 1) / numCards) * 100;
       
       // Desktop: Expand mask from 25% to 100%
-      tl.to(maskRef.current, {
+      tl.to(maskRef.current as Element, {
         width: "100%",
         ease: "none"
       }, 0);
       
       // Move the strip to reveal new cards
-      tl.to(stripRef.current, {
+      tl.to(stripRef.current as Element, {
         x: `-${moveDistancePercent}%`, // Move to reveal all cards
         ease: "none"
       }, 0);
@@ -254,20 +256,20 @@ const ProblemSection: React.FC = () => {
       const moveDistancePercent = ((numPages - 1) / numPages) * 100;
       
       // Tablet: Expand mask from 50% to 100%
-      tl.to(maskRef.current, {
+      tl.to(maskRef.current as Element, {
         width: "100%",
         ease: "none"
       }, 0);
       
       // Move the strip to reveal all cards
-      tl.to(stripRef.current, {
+      tl.to(stripRef.current as Element, {
         x: `-${moveDistancePercent}%`,
         ease: "none"
       }, 0);
     }
     else {
       // Mobile: Animate cards sequentially
-      const cards = gsap.utils.toArray('.problem-card');
+      const cards = gsap.utils.toArray<Element>('.problem-card');
       
       // Set initial state
       gsap.set(cards, {
@@ -277,7 +279,7 @@ const ProblemSection: React.FC = () => {
       
       // Animate each card
       cards.forEach((card, i) => {
-        tl.to(card, {
+        tl.to(card as Element, {
           opacity: 1,
           y: 0,
           duration: 0.5,
@@ -286,7 +288,7 @@ const ProblemSection: React.FC = () => {
         
         // Fade out previous cards slightly
         if (i > 0) {
-          tl.to(cards[i-1], {
+          tl.to(cards[i-1] as Element, {
             opacity: 0.7,
             scale: 0.95,
           }, i * 0.3);
@@ -320,7 +322,7 @@ const ProblemSection: React.FC = () => {
         stripRef.current.style.willChange = 'auto';
       }
     };
-  }, [lenis, viewportSize, activeCard]);
+  }, [lenis, viewportSize]);
 
   // Add keyboard navigation for accessibility
   useEffect(() => {
@@ -508,7 +510,5 @@ const ProblemSection: React.FC = () => {
     </BackgroundWrapper>
   );
 };
-
-export default ProblemSection;
 
 export default ProblemSection;
