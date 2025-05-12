@@ -41,10 +41,48 @@
     --thrive-purple-900: 265, 50%, 25%;
     --thrive-purple-950: 265, 45%, 15%;
 
+    /* Thrive360 unified blue color system */
+    --thrive-blue-50: 220, 100%, 98%;
+    --thrive-blue-100: 220, 90%, 95%;
+    --thrive-blue-200: 220, 85%, 90%;
+    --thrive-blue-300: 220, 80%, 85%;
+    --thrive-blue-400: 220, 75%, 75%;
+    --thrive-blue-500: 220, 70%, 65%;
+    --thrive-blue-600: 220, 65%, 55%;
+    --thrive-blue-700: 220, 60%, 45%;
+    --thrive-blue-800: 220, 55%, 35%;
+    --thrive-blue-900: 220, 50%, 25%;
+    --thrive-blue-950: 220, 45%, 15%;
+
+    /* Thrive360 unified gray color system */
+    --brand-gray-50: 0, 0%, 98%;
+    --brand-gray-100: 0, 0%, 95%;
+    --brand-gray-200: 0, 0%, 91%;
+    --brand-gray-300: 0, 0%, 85%;
+    --brand-gray-400: 0, 0%, 75%;
+    --brand-gray-500: 0, 0%, 65%;
+    --brand-gray-600: 0, 0%, 55%;
+    --brand-gray-700: 0, 0%, 45%;
+    --brand-gray-800: 0, 0%, 35%;
+    --brand-gray-900: 0, 0%, 20%;
+    --brand-gray-950: 0, 0%, 10%;
+
     /* For direct CSS usage */
     --thrive-purple-500-rgb: 165, 122, 226;
     --thrive-purple-600-rgb: 149, 97, 226;
     --thrive-purple-700-rgb: 132, 72, 226;
+    --thrive-blue-600-rgb: 51, 119, 204;
+    --brand-purple-400: 265, 75%, 75%;
+    --brand-purple-500: 265, 70%, 65%;
+    --brand-purple-600: 265, 65%, 55%;
+    --brand-purple-700: 265, 60%, 45%;
+    --brand-purple-800: 265, 55%, 35%;
+    --brand-blue-600: 220, 65%, 55%;
+    --colors-brand-purple-400: hsla(265, 75%, 75%, 1);
+    --colors-brand-purple-500: hsla(265, 70%, 65%, 1);
+    --colors-brand-purple-600: hsla(265, 65%, 55%, 1);
+    --colors-brand-purple-800: hsla(265, 55%, 35%, 1);
+    --colors-brand-blue-600: hsla(220, 65%, 55%, 1);
   }
 
   .dark {
